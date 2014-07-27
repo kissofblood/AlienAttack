@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/titlescreen">
+        <file>resource/bgScreen.png</file>
+        <file>resource/titleScreen.png</file>
+    </qresource>
+    <qresource prefix="/sound">
+        <file>resource/sound/theme.wav</file>
+    </qresource>
+</RCC>
