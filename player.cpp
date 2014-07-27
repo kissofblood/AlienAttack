@@ -10,8 +10,7 @@ Player::Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsI
 
     m_widthBounding = rightScene - 5 - pos.x();
     m_moveSprite = MoveSprite::Stop;
-    m_speedSprite = 10;
-    this->startTimer(m_speedSprite);
+    this->startTimer(10);
 }
 
 QRectF Player::boundingRect() const
@@ -25,14 +24,14 @@ void Player::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
     painter->drawPixmap(m_rectSprite, m_pixSprite);
 }
 
-void Player::setSpeed(int speed)
+void Player::setSpeed(int msec)
 {
-    if(speed != -1)
+    if(msec != -1)
     {
         if(m_timerId != -1)
             this->killTimer(m_timerId);
-        m_speedSprite = speed;
         m_timerId = -1;
+        this->startTimer(msec);
     }
 }
 
@@ -42,6 +41,9 @@ void Player::keyPressEvent(QKeyEvent* event)
         m_moveSprite = MoveSprite::StartLeft;
     else if(event->key() == Qt::Key_D || event->key() == Qt::Key_Right)
         m_moveSprite = MoveSprite::StartRight;
+
+    if(event->key() == Qt::Key_Space)
+        emit fire(QPoint(m_rectSprite.left() + m_rectSprite.width() / 2 - 3, m_rectSprite.top()));
 }
 
 void Player::keyReleaseEvent(QKeyEvent* event)

@@ -10,7 +10,7 @@ public:
     AbstractSprite(QGraphicsItem* parent = nullptr);
     ~AbstractSprite() = default;
 
-    virtual void setSpeed(int speed) = 0;
+    virtual void setSpeed(int msec) = 0;
 };
 
 #endif // ABSTRACTSPRITE_H

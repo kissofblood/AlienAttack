@@ -18,13 +18,15 @@ SOURCES += main.cpp\
     titlescreen.cpp \
     battlefield.cpp \
     abstractsprite.cpp \
-    player.cpp
+    player.cpp \
+    shot.cpp
 
 HEADERS  += alienattack.h \
     titlescreen.h \
     battlefield.h \
     abstractsprite.h \
-    player.h
+    player.h \
+    shot.h
 
 RESOURCES += \
     resource.qrc

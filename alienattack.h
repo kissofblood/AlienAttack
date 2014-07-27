@@ -10,7 +10,6 @@
 class AlienAttack : public QGraphicsView
 {
     Q_OBJECT
-
 public:
     AlienAttack(QWidget* parent = nullptr);
     ~AlienAttack() = default;

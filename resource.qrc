@@ -9,4 +9,8 @@
     <qresource prefix="/player">
         <file>resource/player.png</file>
     </qresource>
+    <qresource prefix="/shot/playershot">
+        <file>resource/shot/pshot_1.png</file>
+        <file>resource/shot/pshot_0.png</file>
+    </qresource>
 </RCC>

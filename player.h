@@ -8,17 +8,17 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
-#include <QPoint>
+#include <QPointF>
 #include <QKeyEvent>
 #include <QTimer>
 #include <QRect>
 
 #include <QtWidgets>
 
-#include <QPropertyAnimation>
-
 class Player : public AbstractSprite
 {
+    Q_OBJECT
+
     enum class MoveSprite { StartLeft, StartRight, Stop };
 public:
     Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsItem* parent = nullptr);
@@ -26,7 +26,10 @@ public:
 
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
-    void setSpeed(int speed) override;
+    void setSpeed(int msec) override;
+
+signals:
+    void fire(const QPoint& point);
 
 private:
     QPoint          m_posBoundingSprite;
@@ -34,8 +37,7 @@ private:
     QRect           m_rectSprite;
     MoveSprite      m_moveSprite;
     int             m_widthBounding;
-    int             m_speedSprite   = 10;
-    int             m_timerId       = -1;
+    int             m_timerId = -1;
 
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
