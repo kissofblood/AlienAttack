@@ -7,6 +7,7 @@ Shot::Shot(const QPoint& pos, const int height, const QVector<QPixmap>& vecPix, 
     m_pixSprite_ = vecPix;
     m_heightBounding = height;
     this->startTimer(5);
+    QSound::play(":sound/resource/sound/playerShot.wav");
 }
 
 QRectF Shot::boundingRect() const

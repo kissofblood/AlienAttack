@@ -5,6 +5,7 @@
     </qresource>
     <qresource prefix="/sound">
         <file>resource/sound/theme.wav</file>
+        <file>resource/sound/playerShot.wav</file>
     </qresource>
     <qresource prefix="/player">
         <file>resource/player.png</file>

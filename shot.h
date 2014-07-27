@@ -11,6 +11,7 @@
 #include <QVector>
 #include <QPixmap>
 #include <QTimerEvent>
+#include <QtMultimedia/QSound>
 
 #include <QtWidgets>
 
