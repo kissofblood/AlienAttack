@@ -1,19 +1,22 @@
 #ifndef BATTLEFIELD_H
 #define BATTLEFIELD_H
 
-#include <QWidget>
+#include "player.h"
+#include <QObject>
 #include <QGraphicsScene>
+#include <QPixmap>
+#include <QPoint>
+#include <QRectF>
 
 class Battlefield : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit Battlefield(QWidget* parent = nullptr);
+    explicit Battlefield(const QRectF& rect, QObject* parent = nullptr);
+    ~Battlefield() = default;
 
-signals:
-
-public slots:
-
+private:
+    Player      *m_player = nullptr;
 };
 
 #endif // BATTLEFIELD_H

@@ -11,13 +11,14 @@
 #include <QTimerEvent>
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QRectF>
 #include <QtMultimedia/QSound>
 
 class TitleScreen : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit TitleScreen(QObject* parent = nullptr);
+    explicit TitleScreen(const QRectF& rect, QObject* parent = nullptr);
     ~TitleScreen() = default;
 
 signals:
@@ -31,6 +32,7 @@ private:
     void timerEvent(QTimerEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent*) override;
+    void stop();
 };
 
 #endif // TITLESCREEN_H

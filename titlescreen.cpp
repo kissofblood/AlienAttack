@@ -1,6 +1,6 @@
 #include "titlescreen.h"
 
-TitleScreen::TitleScreen(QObject* parent) : QGraphicsScene(parent)
+TitleScreen::TitleScreen(const QRectF& rect, QObject* parent) : QGraphicsScene(rect, parent)
 {
     this->addPixmap(QPixmap(":/titlescreen/resource/bgScreen.png"));
     QGraphicsPixmapItem* itemPix = this->addPixmap(QPixmap(":/titlescreen/resource/titleScreen.png"));
@@ -36,16 +36,13 @@ void TitleScreen::timerEvent(QTimerEvent* event)
 void TitleScreen::keyPressEvent(QKeyEvent* event)
 {
     if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
-    {
-        if(m_timerId != -1)
-            this->killTimer(m_timerId);
-        m_timerId = -1;
-        m_sound->stop();
-        emit startGame();
-    }
+        stop();
 }
 
 void TitleScreen::mousePressEvent(QGraphicsSceneMouseEvent*)
+{ stop(); }
+
+void TitleScreen::stop()
 {
     if(m_timerId != -1)
         this->killTimer(m_timerId);

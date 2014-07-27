@@ -16,11 +16,15 @@ QMAKE_CXXFLAGS += -std=c++11
 SOURCES += main.cpp\
         alienattack.cpp \
     titlescreen.cpp \
-    battlefield.cpp
+    battlefield.cpp \
+    abstractsprite.cpp \
+    player.cpp
 
 HEADERS  += alienattack.h \
     titlescreen.h \
-    battlefield.h
+    battlefield.h \
+    abstractsprite.h \
+    player.h
 
 RESOURCES += \
     resource.qrc
