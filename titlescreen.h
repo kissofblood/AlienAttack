@@ -18,7 +18,7 @@ class TitleScreen : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit TitleScreen(const QRectF& rect, QObject* parent = nullptr);
+    TitleScreen(const QRectF& rect, QObject* parent = nullptr);
     ~TitleScreen() = default;
 
 signals:

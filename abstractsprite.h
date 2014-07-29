@@ -11,6 +11,9 @@ public:
     ~AbstractSprite() = default;
 
     virtual void setSpeed(int msec) = 0;
+
+protected:
+    virtual bool outputAbroad() = 0;
 };
 
 #endif // ABSTRACTSPRITE_H

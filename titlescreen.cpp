@@ -12,7 +12,7 @@ TitleScreen::TitleScreen(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     m_itemTxt->setPos(this->width() / 2 + 60, this->height() / 2 + 170);
 
     m_sound->setLoops(-1);
-    m_sound->play();
+   // m_sound->play();
 
     this->startTimer(700);
 }

@@ -10,7 +10,7 @@ Player::Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsI
 
     m_widthBounding = rightScene - 5 - pos.x();
     m_moveSprite = MoveSprite::Stop;
-    this->startTimer(10);
+    setSpeed(10);
 }
 
 QRectF Player::boundingRect() const
@@ -56,30 +56,34 @@ void Player::keyReleaseEvent(QKeyEvent* event)
 
 void Player::timerEvent(QTimerEvent*event)
 {
+    outputAbroad();
+    m_timerId = event->timerId();
+    this->update(boundingRect());
+}
+
+bool Player::outputAbroad()
+{
     QRectF rectField = boundingRect();
     if(m_moveSprite == MoveSprite::StartLeft)
     {
-        bool flagLeft = true;
         if(rectField.left() >= m_rectSprite.left())
         {
             m_rectSprite.moveLeft(rectField.left());
-            flagLeft = false;
+            return true;
         }
-        if(flagLeft)
-            m_rectSprite.moveLeft(m_rectSprite.left() - 2);
+        m_rectSprite.moveLeft(m_rectSprite.left() - 2);
+        return false;
     }
     else if(m_moveSprite == MoveSprite::StartRight)
     {
-        bool flagRight = true;
         if(rectField.right() <= m_rectSprite.right())
         {
             m_rectSprite.moveRight(rectField.right());
-            flagRight = false;
+            return true;
         }
-        if(flagRight)
-            m_rectSprite.moveRight(m_rectSprite.right() + 2);
+        m_rectSprite.moveRight(m_rectSprite.right() + 2);
+        return false;
     }
-    m_timerId = event->timerId();
-    this->update(boundingRect());
+    return false;
 }
 
