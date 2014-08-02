@@ -1,24 +1,29 @@
 #include "shot.h"
 
-Shot::Shot(AACommon::Person person, const QPoint& pos, int height, const QVector<QPixmap>& vecPix, QGraphicsItem* parent) : AbstractSprite(parent)
+Shot::Shot(Common::Person person, const QPoint& pos, int height, const QVector<QPixmap>& vecPix, QGraphicsItem* parent) : AbstractSprite(parent)
     , m_rectSprite(QRect(pos.x(), pos.y(), vecPix.front().width(), vecPix.front().width()))
     , m_person(person)
 {
-    if(person == AACommon::Person::Player)
+    if(person == Common::Person::Player)
+    {
         m_posBoundingSprite = QPoint(pos.x(), pos.y() - vecPix.front().height() + 4);
-    else if(person == AACommon::Person::Enemy)
+        QSound::play(":sound/resource/sound/playerShot.wav");
+    }
+    else if(person == Common::Person::Enemy)
+    {
         m_posBoundingSprite = pos;
+        QSound::play(":sound/resource/sound/enemyShot.wav");
+    }
     m_pixSprite_ = vecPix;
     m_heightBounding = height;
     setSpeed(5);
-    QSound::play(":sound/resource/sound/playerShot.wav");
 }
 
 QRectF Shot::boundingRect() const
 {
-    if(m_person == AACommon::Person::Player)
+    if(m_person == Common::Person::Player)
         return QRectF(m_posBoundingSprite.x(), 0, m_pixSprite_.front().width(), m_heightBounding);
-    else if(m_person == AACommon::Person::Enemy)
+    else if(m_person == Common::Person::Enemy)
         return QRectF(m_posBoundingSprite.x(), m_posBoundingSprite.y(), m_pixSprite_.front().width(), m_heightBounding);
     return QRectF();
 }
@@ -57,14 +62,14 @@ void Shot::timerEvent(QTimerEvent* event)
 
 bool Shot::outputAbroad()
 {
-    if(m_person == AACommon::Person::Player)
+    if(m_person == Common::Person::Player)
     {
         if(m_rectSprite.top() <= 0)
             return true;
         m_rectSprite.moveTo(m_rectSprite.left(), m_rectSprite.top() - 2);
         return false;
     }
-    else if(m_person == AACommon::Person::Enemy)
+    else if(m_person == Common::Person::Enemy)
     {
         if(m_rectSprite.top() >= boundingRect().bottom())
             return true;

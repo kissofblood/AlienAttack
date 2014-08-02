@@ -8,6 +8,7 @@ AlienAttack::AlienAttack(QWidget* parent) : QGraphicsView(parent)
 
     this->connect(m_titlescreen, &TitleScreen::startGame, [this]()
     {
+        m_battlefield = new Battlefield(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
         this->setScene(m_battlefield);
         delete m_titlescreen;
     });

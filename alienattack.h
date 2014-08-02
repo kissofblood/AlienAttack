@@ -3,6 +3,7 @@
 
 #include "titlescreen.h"
 #include "battlefield.h"
+#include "common.h"
 #include <QWidget>
 #include <QGraphicsView>
 #include <QRectF>
@@ -15,8 +16,8 @@ public:
     ~AlienAttack() = default;
 
 private:
-    TitleScreen             *m_titlescreen  = new TitleScreen(QRectF(0, 0, 995, 615), this);
-    Battlefield             *m_battlefield  = new Battlefield(QRectF(0, 0, 995, 615), this);
+    TitleScreen             *m_titlescreen  = new TitleScreen(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
+    Battlefield             *m_battlefield  = nullptr;
 };
 
 #endif // ALIENATTACK_H

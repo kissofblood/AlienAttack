@@ -1,9 +1,13 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-namespace AACommon {
+#include <QSize>
+
+namespace Common {
 
 enum class Person { Player, Enemy };
+enum class MoveSprite { TurnLeft, TurnRight, Stop };
+static QSize sizeScene(995, 615);
 
 }
 

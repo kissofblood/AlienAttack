@@ -7,7 +7,7 @@
 class AbstractSprite : public QGraphicsObject
 {
 public:
-    AbstractSprite(QGraphicsItem* parent = nullptr);
+    AbstractSprite(QGraphicsItem* parent = nullptr) : QGraphicsObject(parent) { }
     ~AbstractSprite() = default;
 
     virtual void setSpeed(int msec) = 0;

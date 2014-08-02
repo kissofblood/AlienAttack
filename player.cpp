@@ -9,7 +9,7 @@ Player::Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsI
     this->setFocus();
 
     m_widthBounding = rightScene - 5 - pos.x();
-    m_moveSprite = MoveSprite::Stop;
+    m_moveSprite = Common::MoveSprite::Stop;
     setSpeed(10);
 }
 
@@ -38,9 +38,9 @@ void Player::setSpeed(int msec)
 void Player::keyPressEvent(QKeyEvent* event)
 {
     if(event->key() == Qt::Key_A || event->key() == Qt::Key_Left)
-        m_moveSprite = MoveSprite::StartLeft;
+        m_moveSprite = Common::MoveSprite::TurnLeft;
     else if(event->key() == Qt::Key_D || event->key() == Qt::Key_Right)
-        m_moveSprite = MoveSprite::StartRight;
+        m_moveSprite = Common::MoveSprite::TurnRight;
 
     if(event->key() == Qt::Key_Space)
         emit fire(QPoint(m_rectSprite.left() + m_rectSprite.width() / 2 - 3, m_rectSprite.top()));
@@ -49,9 +49,9 @@ void Player::keyPressEvent(QKeyEvent* event)
 void Player::keyReleaseEvent(QKeyEvent* event)
 {
     if(event->key() == Qt::Key_A || event->key() == Qt::Key_Left)
-        m_moveSprite = MoveSprite::Stop;
+        m_moveSprite = Common::MoveSprite::Stop;
     else if(event->key() == Qt::Key_D || event->key() == Qt::Key_Right)
-        m_moveSprite = MoveSprite::Stop;
+        m_moveSprite = Common::MoveSprite::Stop;
 }
 
 void Player::timerEvent(QTimerEvent*event)
@@ -64,7 +64,7 @@ void Player::timerEvent(QTimerEvent*event)
 bool Player::outputAbroad()
 {
     QRectF rectField = boundingRect();
-    if(m_moveSprite == MoveSprite::StartLeft)
+    if(m_moveSprite == Common::MoveSprite::TurnLeft)
     {
         if(rectField.left() >= m_rectSprite.left())
         {
@@ -74,7 +74,7 @@ bool Player::outputAbroad()
         m_rectSprite.moveLeft(m_rectSprite.left() - 2);
         return false;
     }
-    else if(m_moveSprite == MoveSprite::StartRight)
+    else if(m_moveSprite == Common::MoveSprite::TurnRight)
     {
         if(rectField.right() <= m_rectSprite.right())
         {

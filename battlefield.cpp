@@ -20,18 +20,11 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     m_itemTxtScope->setFont(QFont("Times", 25, QFont::Normal));
     m_itemTxtScope->setDefaultTextColor(QColor(Qt::white));
 
-    const int countPix = 10;
-    QVector<QPixmap> vecPix;
-    for(int i = 0; i < countPix; i++)
-        vecPix.push_back(QPixmap(QString(":enemy/resource/enemy/enemy1_%1").arg(QString::number(i))));
-    m_enemy = new Enemy(QPoint(300, 20), rect.right(), vecPix);
-
     this->addItem(m_player);
-    this->addItem(m_enemy);
-
     this->connect(m_player, &Player::fire, this, &Battlefield::shot);
 
-    this->connect(m_enemy, &Enemy::fire, this, &Battlefield::funShot);
+    m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right());
+    this->addItem(m_enemyGroup);
 }
 
 void Battlefield::shot(const QPoint& pos)
@@ -41,7 +34,7 @@ void Battlefield::shot(const QPoint& pos)
     for(int i = 0; i < countPix; i++)
         vecPix.push_back(QPixmap(QString(":shot/playershot/resource/shot/pshot_%1.png").arg(QString::number(i))));
 
-    m_shot_.push_back(new Shot(AACommon::Person::Player, pos, 550, vecPix));
+    m_shot_.push_back(new Shot(Common::Person::Player, pos, 550, vecPix));
     this->addItem(m_shot_.back());
     this->connect(m_shot_.back(), &Shot::deleteShot, this, &Battlefield::deleteShotItem);
 }

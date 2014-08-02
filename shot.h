@@ -20,7 +20,7 @@ class Shot : public AbstractSprite
 {
     Q_OBJECT
 public:
-    Shot(AACommon::Person person, const QPoint& pos, int height, const QVector<QPixmap>& vecPix, QGraphicsItem* parent = nullptr);
+    Shot(Common::Person person, const QPoint& pos, int height, const QVector<QPixmap>& vecPix, QGraphicsItem* parent = nullptr);
     ~Shot() = default;
 
     QRectF boundingRect() const override;
@@ -32,7 +32,7 @@ signals:
 
 private:
     QRect                   m_rectSprite;
-    AACommon::Person        m_person;
+    Common::Person        m_person;
     QVector<QPixmap>        m_pixSprite_;
     QPoint                  m_posBoundingSprite;
     int                     m_timerId = -1;

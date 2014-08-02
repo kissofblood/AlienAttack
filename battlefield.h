@@ -2,7 +2,7 @@
 #define BATTLEFIELD_H
 
 #include "player.h"
-#include "enemy.h"
+#include "enemygroup.h"
 #include "shot.h"
 #include "common.h"
 #include <QObject>
@@ -40,42 +40,14 @@ private slots:
     void reduceLife();
     void setScope();
 
-
-    void funShot(const QPoint& pos)
-    {
-        const int countPix = 2;
-        QVector<QPixmap> vecPix;
-        for(int i = 0; i < countPix; i++)
-            vecPix.push_back(QPixmap(QString(":shot/enemy/resource/shot/eshot_%1.png").arg(QString::number(i))));
-
-        m_vecShot.push_back(new Shot(AACommon::Person::Enemy, pos, this->height(), vecPix));
-        this->addItem(m_vecShot.back());
-        this->connect(m_vecShot.back(), &Shot::deleteShot, this, &Battlefield::deleteShotItem);
-    }
-
-    void deleteVecShot()
-    {
-        Shot* shotItem = qobject_cast<Shot*>(this->sender());
-        if(shotItem == nullptr)
-            return;
-
-        m_vecShot.erase(std::remove(m_shot_.begin(), m_shot_.end(), shotItem), m_shot_.end());
-        this->removeItem(shotItem);
-        delete shotItem;
-
-        qDebug()<<m_vecShot.size();
-    }
-
 private:
     Player              *m_player       = nullptr;
-    Enemy               *m_enemy        = nullptr;
+    EnemyGroup          *m_enemyGroup   = nullptr;
     QGraphicsTextItem   *m_itemTxtLive  = nullptr;
     QGraphicsPixmapItem *m_itemPixLive  = nullptr;
     QGraphicsTextItem   *m_itemTxtScope = nullptr;
     QStateMachine       *m_stateMachine = new QStateMachine(this);
     QVector<Shot*>      m_shot_;
-
-    QVector<Shot*>      m_vecShot;
 };
 
 #endif // BATTLEFIELD_H
