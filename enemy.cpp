@@ -36,6 +36,23 @@ void Enemy::setSpeed(int msec)
     }
 }
 
+void Enemy::stopGame()
+{
+    if(m_timerId != -1)
+    {
+        this->killTimer(m_timerId);
+        m_animSprite->stop();
+        m_timerId = -1;
+    }
+}
+
+QPainterPath Enemy::shape() const
+{
+    QPainterPath path;
+    path.addRect(m_rectSprite.x(), m_rectSprite.y(), m_rectSprite.width(), m_rectSprite.height());
+    return path;
+}
+
 void Enemy::startAnimSprite(int msec)
 {
     m_animSprite->start(msec);

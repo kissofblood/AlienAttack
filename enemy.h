@@ -13,6 +13,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QPair>
+#include <QPainterPath>
 
 
 #include <QtWidgets>
@@ -27,6 +28,8 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
     void setSpeed(int msec) override;
+    void stopGame() override;
+    QPainterPath shape() const override;
     void startAnimSprite(int msec);
     void attack();
     void setPosY(qreal y);

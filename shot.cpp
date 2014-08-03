@@ -53,11 +53,24 @@ void Shot::timerEvent(QTimerEvent* event)
     {
         m_timerId = -1;
         this->killTimer(event->timerId());
-            emit deleteShot();
+            emit deleteShot(this);
         return;
     }
     m_timerId = event->timerId();
     this->update(boundingRect());
+    emit pathShot(this);
+}
+
+QPainterPath Shot::shape() const
+{
+    QPainterPath path;
+    path.addRect(m_rectSprite.x(), m_rectSprite.y(), m_rectSprite.width(), m_rectSprite.height());
+    return path;
+}
+
+void Shot::stopGame()
+{
+    emit deleteShot(this);
 }
 
 bool Shot::outputAbroad()

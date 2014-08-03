@@ -61,6 +61,22 @@ void Player::timerEvent(QTimerEvent*event)
     this->update(boundingRect());
 }
 
+QPainterPath Player::shape() const
+{
+    QPainterPath path;
+    path.addRect(m_rectSprite.x(), m_rectSprite.y(), m_rectSprite.width(), m_rectSprite.height());
+    return path;
+}
+
+void Player::stopGame()
+{
+    if(m_timerId != -1)
+    {
+        this->killTimer(m_timerId);
+        m_timerId = -1;
+    }
+}
+
 bool Player::outputAbroad()
 {
     QRectF rectField = boundingRect();

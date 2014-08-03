@@ -20,11 +20,12 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     m_itemTxtScope->setFont(QFont("Times", 25, QFont::Normal));
     m_itemTxtScope->setDefaultTextColor(QColor(Qt::white));
 
-    this->addItem(m_player);
-    this->connect(m_player, &Player::fire, this, &Battlefield::shot);
-
     m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right());
+
     this->addItem(m_enemyGroup);
+    this->addItem(m_player);
+    this->connect(m_player,     &Player::fire,          this, &Battlefield::shot);
+    this->connect(m_enemyGroup, &EnemyGroup::pathShot,  this, &Battlefield::collidingPlayer);
 }
 
 void Battlefield::shot(const QPoint& pos)
@@ -37,14 +38,11 @@ void Battlefield::shot(const QPoint& pos)
     m_shot_.push_back(new Shot(Common::Person::Player, pos, 550, vecPix));
     this->addItem(m_shot_.back());
     this->connect(m_shot_.back(), &Shot::deleteShot, this, &Battlefield::deleteShotItem);
+    this->connect(m_shot_.back(), &Shot::pathShot,   this, &Battlefield::collidingEnemy);
 }
 
-void Battlefield::deleteShotItem()
+void Battlefield::deleteShotItem(Shot* shotItem)
 {
-    Shot* shotItem = qobject_cast<Shot*>(this->sender());
-    if(shotItem == nullptr)
-        return;
-
     m_shot_.erase(std::remove(m_shot_.begin(), m_shot_.end(), shotItem), m_shot_.end());
     this->removeItem(shotItem);
     delete shotItem;
@@ -86,6 +84,10 @@ void Battlefield::reduceLife()
     else if(num == 0)
     {
         m_stateMachine->stop();
+        m_player->stopGame();
+        m_enemyGroup->stopGame();
+        foreach(Shot* shot, m_shot_)
+            shot->stopGame();
         emit gameOver();
         this->update();
     }
@@ -96,4 +98,20 @@ void Battlefield::setScope()
 {
     int num = m_itemTxtScope->toPlainText().toInt() + 1;
     m_itemTxtScope->setPlainText(QString::number(num));
+}
+
+void Battlefield::collidingPlayer(Shot* shot)
+{
+    if(m_player->collidesWithItem(shot))
+    {
+        m_enemyGroup->removeShotItem(shot);
+        deleteShotItem(shot);
+        reduceLife();
+    }
+}
+
+void Battlefield::collidingEnemy(Shot* shot)
+{
+    if(m_enemyGroup->collidingEnemy(shot))
+        deleteShotItem(shot);
 }

@@ -16,8 +16,8 @@ public:
     ~AlienAttack() = default;
 
 private:
-    TitleScreen             *m_titlescreen  = new TitleScreen(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
-    Battlefield             *m_battlefield  = nullptr;
+    TitleScreen     *m_titlescreen  = new TitleScreen(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
+    Battlefield     *m_battlefield  = nullptr;
 };
 
 #endif // ALIENATTACK_H

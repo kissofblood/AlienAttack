@@ -12,6 +12,7 @@
 #include <QRectF>
 #include <QVector>
 #include <algorithm>
+#include <functional>
 #include <QGraphicsTextItem>
 #include <QGraphicsPixmapItem>
 #include <QFont>
@@ -36,9 +37,11 @@ signals:
 
 private slots:
     void shot(const QPoint& pos);
-    void deleteShotItem();
+    void deleteShotItem(Shot* shotItem);
     void reduceLife();
     void setScope();
+    void collidingPlayer(Shot* shot);
+    void collidingEnemy(Shot* shot);
 
 private:
     Player              *m_player       = nullptr;

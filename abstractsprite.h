@@ -11,6 +11,7 @@ public:
     ~AbstractSprite() = default;
 
     virtual void setSpeed(int msec) = 0;
+    virtual void stopGame() = 0;
 
 protected:
     virtual bool outputAbroad() = 0;

@@ -10,31 +10,30 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, QGraphicsItem* parent)
     QVector<QPixmap> vecPix;
     for(int i = 0; i < countPix; i++)
         vecPix.push_back(QPixmap(QString(":enemy/resource/enemy/enemy1_%1").arg(QString::number(i))));
-     for(int i = 0, y = 0; i < m_row; i++, y += vecPix.front().height() + 10)
-     {
-         QVector<Enemy*> vecEnemy;
-         for(int j = 0, x = 0; j < m_column; j++, x += vecPix.front().width() + 5)
-         {
-             vecEnemy.push_back(new Enemy(QPoint(pos.x() + x, pos.y() + y), qMakePair(pos.x(), rightScene), vecPix));
-             vecEnemy.back()->setSpeed(120);
-             m_group->addToGroup(vecEnemy.back());
-         }
-         m_enemy_.push_back(vecEnemy);
-     }
+    for(int i = 0, y = 0; i < 4; i++, y += vecPix.front().height() + 10)
+    {
+        QVector<Enemy*> vecEnemy;
+        for(int j = 0, x = 0; j < 7; j++, x += vecPix.front().width() + 5)
+        {
+            vecEnemy.push_back(new Enemy(QPoint(pos.x() + x, pos.y() + y), qMakePair(pos.x(), rightScene), vecPix));
+            m_group->addToGroup(vecEnemy.back());
+        }
+        m_enemy_.push_back(vecEnemy);
+    }
 
-     std::for_each(m_enemy_.begin(), m_enemy_.end(), [this](const QVector<Enemy*>& vecEnemy)
-     {
-         foreach(Enemy* enemy1, vecEnemy)
-         {
-             foreach(Enemy* enemy2, vecEnemy)
-                 if(enemy1 != enemy2)
-                     this->connect(enemy1, &Enemy::turnChange, enemy2, &Enemy::setTurn);
-             this->connect(enemy1, &Enemy::fire, this, &EnemyGroup::shot);
-             this->connect(enemy1, &Enemy::turnChange, this, &EnemyGroup::countDownEnemy);
-         }
-     });
+    std::for_each(m_enemy_.begin(), m_enemy_.end(), [this](const QVector<Enemy*>& vecEnemy)
+    {
+        foreach(Enemy* enemy1, vecEnemy)
+        {
+            foreach(Enemy* enemy2, vecEnemy)
+                if(enemy1 != enemy2)
+                    this->connect(enemy1, &Enemy::turnChange, enemy2, &Enemy::setTurn);
+            this->connect(enemy1, &Enemy::fire,         this, &EnemyGroup::shot);
+            this->connect(enemy1, &Enemy::turnChange,   this, &EnemyGroup::countDownEnemy);
+        }
+    });
 
-     setSpeed(1000);
+    setSpeed(1000);
 }
 
 QRectF EnemyGroup::boundingRect() const
@@ -58,6 +57,44 @@ void EnemyGroup::setSpeed(int msec)
     }
 }
 
+void EnemyGroup::stopGame()
+{
+    if(m_timerId != -1)
+    {
+        std::for_each(m_enemy_.begin(), m_enemy_.end(), [](const QVector<Enemy*>& vecEnemy)
+        {
+            foreach(Enemy* enemy, vecEnemy)
+                enemy->stopGame();
+        });
+        foreach(Shot* shot, m_shot_)
+            shot->stopGame();
+        this->killTimer(m_timerId);
+        m_timerId = -1;
+    }
+}
+
+void EnemyGroup::removeShotItem(Shot* shotItem)
+{
+    m_shot_.erase(std::remove(m_shot_.begin(), m_shot_.end(), shotItem), m_shot_.end());
+    m_group->removeFromGroup(shotItem);
+}
+
+bool EnemyGroup::collidingEnemy(Shot* shot)
+{
+    for(int i = 0; i < m_enemy_.size(); i++)
+        for(int j = 0; j < m_enemy_[i].size(); j++)
+            if(m_enemy_[i][j]->collidesWithItem(shot))
+            {
+                m_group->removeFromGroup(m_enemy_[i][j]);
+                delete m_enemy_[i][j];
+                m_enemy_[i].remove(j);
+                if(m_enemy_[i].empty())
+                    m_enemy_.remove(i);
+                return true;
+            }
+    return false;
+}
+
 void EnemyGroup::shot(const QPoint& pos)
 {
     const int countPix = 2;
@@ -68,14 +105,11 @@ void EnemyGroup::shot(const QPoint& pos)
     m_shot_.push_back(new Shot(Common::Person::Enemy, pos, Common::sizeScene.height() - pos.y(), vecPix));
     m_group->addToGroup(m_shot_.back());
     this->connect(m_shot_.back(), &Shot::deleteShot, this, &EnemyGroup::deleteShotItem);
+    this->connect(m_shot_.back(), &Shot::pathShot,   this, &EnemyGroup::pathShot);
 }
 
-void EnemyGroup::deleteShotItem()
+void EnemyGroup::deleteShotItem(Shot* shotItem)
 {
-    Shot* shotItem = qobject_cast<Shot*>(this->sender());
-    if(shotItem == nullptr)
-        return;
-
     m_shot_.erase(std::remove(m_shot_.begin(), m_shot_.end(), shotItem), m_shot_.end());
     m_group->removeFromGroup(shotItem);
     delete shotItem;
@@ -94,8 +128,9 @@ void EnemyGroup::countDownEnemy(Common::MoveSprite moveSprite)
         count = 0;
     }
 
-    if(countY == 4)
+    if(countY == 3)
     {
+        this->prepareGeometryChange();
         m_posBoundingSprite.ry() += 20;
         std::for_each(m_enemy_.begin(), m_enemy_.end(), [this](const QVector<Enemy*>& vecEnemy)
         {
@@ -106,9 +141,16 @@ void EnemyGroup::countDownEnemy(Common::MoveSprite moveSprite)
     }
 }
 
-void EnemyGroup::timerEvent(QTimerEvent*)
+void EnemyGroup::timerEvent(QTimerEvent* event)
 {
-    m_row = qrand() % m_enemy_.size();
-    m_column = qrand() % m_enemy_[m_row].size();
-    m_enemy_[m_row][m_column]->attack();
+    if(m_enemy_.empty())
+    {
+        this->killTimer(event->timerId());
+        m_timerId = -1;
+        return;
+    }
+    int row = qrand() % m_enemy_.size();
+    int column = qrand() % m_enemy_[row].size();
+    m_enemy_[row][column]->attack();
+    m_timerId = event->timerId();
 }
