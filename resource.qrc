@@ -7,6 +7,7 @@
         <file>resource/sound/theme.wav</file>
         <file>resource/sound/playerShot.wav</file>
         <file>resource/sound/enemyShot.wav</file>
+        <file>resource/sound/explosion.wav</file>
     </qresource>
     <qresource prefix="/player">
         <file>resource/player.png</file>
@@ -30,5 +31,17 @@
     <qresource prefix="/shot/enemy">
         <file>resource/shot/eshot_0.png</file>
         <file>resource/shot/eshot_1.png</file>
+    </qresource>
+    <qresource prefix="/explosion">
+        <file>resource/explosion/explosion_9.png</file>
+        <file>resource/explosion/explosion_8.png</file>
+        <file>resource/explosion/explosion_7.png</file>
+        <file>resource/explosion/explosion_6.png</file>
+        <file>resource/explosion/explosion_5.png</file>
+        <file>resource/explosion/explosion_3.png</file>
+        <file>resource/explosion/explosion_4.png</file>
+        <file>resource/explosion/explosion_2.png</file>
+        <file>resource/explosion/explosion_1.png</file>
+        <file>resource/explosion/explosion_0.png</file>
     </qresource>
 </RCC>

@@ -42,9 +42,9 @@ private:
     QGraphicsItemGroup          *m_group = new QGraphicsItemGroup(this);
     QVector<QVector<Enemy*>>    m_enemy_;
     QVector<Shot*>              m_shot_;
-    int m_timerId   = -1;
+    int                         m_timerId = -1;
 
-    void timerEvent(QTimerEvent*event) override;
+    void timerEvent(QTimerEvent* event) override;
     bool outputAbroad() final { return false; }
 };
 

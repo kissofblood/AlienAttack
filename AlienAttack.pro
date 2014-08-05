@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     player.cpp \
     shot.cpp \
     enemy.cpp \
-    enemygroup.cpp
+    enemygroup.cpp \
+    level.cpp
 
 HEADERS  += alienattack.h \
     titlescreen.h \
@@ -30,7 +31,8 @@ HEADERS  += alienattack.h \
     shot.h \
     enemy.h \
     common.h \
-    enemygroup.h
+    enemygroup.h \
+    level.h
 
 RESOURCES += \
     resource.qrc
