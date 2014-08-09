@@ -20,13 +20,14 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     m_itemTxtTimer->setFont(QFont("Times", 25, QFont::Normal));
     m_itemTxtTimer->setDefaultTextColor(QColor(Qt::white));
 
-    m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right());
+    m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right(), m_player);
 
     this->addItem(m_enemyGroup);
     this->addItem(m_player);
     this->connect(m_player,     &Player::fire,          this, &Battlefield::shot);
     this->connect(m_enemyGroup, &EnemyGroup::pathShot,  this, &Battlefield::collidingPlayer);
     this->connect(m_enemyGroup, &EnemyGroup::killEnemy, this, &Battlefield::killEnemy);
+    this->connect(m_enemyGroup, &EnemyGroup::gameOver,  this, &Battlefield::stopGame);
     this->connect(m_timer,      &QTimer::timeout,       this, &Battlefield::countdown);
 }
 
@@ -38,7 +39,7 @@ void Battlefield::setSpeedEnemy(int msec)
 
 void Battlefield::activateTime()
 {
-    m_timer->start(20);
+    m_timer->start(1000);
     m_player->setSpeed(8);
 }
 
@@ -98,20 +99,10 @@ void Battlefield::reduceLife()
     else if(num == 0)
     {
         m_stateMachine->stop();
-        m_player->stopGame();
-        m_enemyGroup->stopGame();
-        foreach(Shot* shot, m_shot_)
-            shot->stopGame();
-        emit gameOver();
-        this->update();
+        m_player->explosion();
+        stopGame();
     }
     m_itemTxtLive->setPlainText("x" + QString::number(num));
-}
-
-void Battlefield::setScope()
-{
-    int num = m_itemTxtTimer->toPlainText().toInt() + 1;
-    m_itemTxtTimer->setPlainText(QString::number(num));
 }
 
 void Battlefield::collidingPlayer(Shot* shot)
@@ -141,4 +132,14 @@ void Battlefield::countdown()
     }
     m_itemTxtTimer->setPlainText(QTime::fromMSecsSinceStartOfDay(time.msecsSinceStartOfDay() - 1000)
                                  .toString("mm:ss"));
+}
+
+void Battlefield::stopGame()
+{
+    m_player->stopGame();
+    m_enemyGroup->stopGame();
+    m_timer->stop();
+    std::for_each(m_shot_.begin(), m_shot_.end(), std::bind(&Shot::stopGame, std::placeholders::_1));
+    emit gameOver();
+    this->update();
 }

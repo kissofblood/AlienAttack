@@ -19,25 +19,37 @@ void Level::initialData(int speedShotEnemy, int speedEnemy)
 void Level::amountKillEnemy(int amount)
 {
     m_amount += 1;
-    Q_UNUSED(amount);
+    if(amount == 2)
+    {
+        m_initialDataFun.first = 2000;
+        m_initialDataFun.second = 15;
+        m_speedShotEnemy(m_initialDataFun.first);
+        m_speedEnemy(m_initialDataFun.second);
+    }
+    else if(amount == 1)
+    {
+        m_initialDataFun.first = 1000;
+        m_initialDataFun.second = 5;
+        m_speedShotEnemy(m_initialDataFun.first);
+        m_speedEnemy(m_initialDataFun.second);
+    }
 }
 
 void Level::finishLevel()
 {
-    m_amount = 0;
+    m_level += 1;
     m_txtItemAmount->setPlainText(m_txtAmount.arg(QString::number(m_amount)));
     m_txtItemAmount->show();
     emit victory();
 
     QTimer::singleShot(1000, this, SLOT(activateLevel()));
+    m_amount = 0;
 }
 
 void Level::activateLevel()
 {
     m_speedShotEnemy(m_initialDataFun.first -= 1);
-    m_speedEnemy(m_initialDataFun.second -= 1);
+    m_speedEnemy(m_initialDataFun.second);
     m_activateTimer();
     emit nextLevel();
-
-    qDebug()<<m_initialDataFun;
 }

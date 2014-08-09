@@ -14,6 +14,9 @@
 #include <QTimer>
 #include <QRect>
 #include <QPainterPath>
+#include <QVector>
+#include <QTimer>
+#include <QtMultimedia/QSound>
 
 #include <QtWidgets>
 
@@ -29,17 +32,25 @@ public:
     void setSpeed(int msec) override;
     QPainterPath shape() const override;
     void stopGame() override;
+    void explosion();
 
 signals:
     void fire(const QPoint& point);
+
+private slots:
+    void animExplosion();
 
 private:
     QPoint              m_posBoundingSprite;
     QPixmap             m_pixSprite;
     QRect               m_rectSprite;
     Common::MoveSprite  m_moveSprite;
+    QVector<QPixmap>    m_pixExplosion_;
+    QTimer              *m_animExplosion = new QTimer(this);
     int                 m_widthBounding;
-    int                 m_timerId = -1;
+    int                 m_timerId    = -1;
+    int                 m_frameIndex = 0;
+    bool                m_flagExplosion = false;
 
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;

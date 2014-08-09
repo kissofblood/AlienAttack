@@ -10,17 +10,31 @@ Player::Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsI
 
     m_widthBounding = rightScene - 5 - pos.x();
     m_moveSprite = Common::MoveSprite::Stop;
+
+    for(int i = 0; i < 9; i++)
+        m_pixExplosion_.push_back(QPixmap(QString(":/explosion/resource/explosion/explosion_%1.png")
+                                        .arg(QString::number(i))));
+    this->connect(m_animExplosion, &QTimer::timeout, this, &Player::animExplosion);
 }
 
 QRectF Player::boundingRect() const
 {
-    return QRectF(m_posBoundingSprite.x(), m_posBoundingSprite.y(), m_widthBounding, m_pixSprite.height());
+    if(m_flagExplosion)
+        return QRectF(m_rectSprite.x(), m_posBoundingSprite.y() - 30,
+                      m_pixExplosion_[m_flagExplosion].width(),
+                      m_pixExplosion_[m_flagExplosion].height());
+    else
+        return QRectF(m_posBoundingSprite.x(), m_posBoundingSprite.y(),
+                      m_widthBounding, m_pixSprite.height());
 }
 
 void Player::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-//    painter->drawRect(boundingRect());
+   //painter->drawRect(boundingRect());
     painter->drawPixmap(m_rectSprite, m_pixSprite);
+    if(m_animExplosion->isActive())
+        painter->drawPixmap(m_rectSprite.x(), m_posBoundingSprite.y() - 30
+                        , m_pixExplosion_[m_frameIndex]);
 }
 
 void Player::setSpeed(int msec)
@@ -74,6 +88,22 @@ void Player::stopGame()
         this->killTimer(m_timerId);
         m_timerId = -1;
     }
+}
+
+void Player::animExplosion()
+{
+    m_frameIndex += 1;
+    if(m_frameIndex == m_pixExplosion_.size())
+        m_animExplosion->stop();
+    this->update();
+}
+
+void Player::explosion()
+{
+    this->prepareGeometryChange();
+    m_flagExplosion = true;
+    m_animExplosion->start(100);
+    QSound::play(":/sound/resource/sound/explosion.wav");
 }
 
 bool Player::outputAbroad()

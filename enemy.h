@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QPair>
 #include <QPainterPath>
+#include <QTimer>
 
 
 #include <QtWidgets>

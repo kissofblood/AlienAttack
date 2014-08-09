@@ -48,19 +48,19 @@ private slots:
     void shot(const QPoint& pos);
     void deleteShotItem(Shot* shotItem);
     void reduceLife();
-    void setScope();
     void collidingPlayer(Shot* shot);
     void collidingEnemy(Shot* shot);
     void countdown();
+    void stopGame();
 
 private:
-    Player              *m_player       = nullptr;
-    EnemyGroup          *m_enemyGroup   = nullptr;
-    QGraphicsTextItem   *m_itemTxtLive  = nullptr;
-    QGraphicsPixmapItem *m_itemPixLive  = nullptr;
-    QGraphicsTextItem   *m_itemTxtTimer = nullptr;
-    QStateMachine       *m_stateMachine = new QStateMachine(this);
-    QTimer              *m_timer        = new QTimer(this);
+    Player              *m_player        = nullptr;
+    EnemyGroup          *m_enemyGroup    = nullptr;
+    QGraphicsTextItem   *m_itemTxtLive   = nullptr;
+    QGraphicsPixmapItem *m_itemPixLive   = nullptr;
+    QGraphicsTextItem   *m_itemTxtTimer  = nullptr;
+    QStateMachine       *m_stateMachine  = new QStateMachine(this);
+    QTimer              *m_timer         = new QTimer(this);
     QVector<Shot*>      m_shot_;
 };
 

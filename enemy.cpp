@@ -103,10 +103,10 @@ bool Enemy::outputAbroad()
             emit turnChange(Common::MoveSprite::TurnRight);
             m_rectSprite.moveLeft(rectField.left());
             m_moveSprite = Common::MoveSprite::TurnRight;
-            return false;
+            return true;
         }
         m_rectSprite.moveLeft(m_rectSprite.left() - 2);
-        return true;
+        return false;
     }
     else if(m_moveSprite == Common::MoveSprite::TurnRight)
     {
@@ -115,10 +115,10 @@ bool Enemy::outputAbroad()
             emit turnChange(Common::MoveSprite::TurnLeft);
             m_rectSprite.moveRight(rectField.right());
             m_moveSprite = Common::MoveSprite::TurnLeft;
-            return false;
+            return true;
         }
         m_rectSprite.moveRight(m_rectSprite.right() + 2);
-        return true;
+        return false;
     }
     return false;
 }
