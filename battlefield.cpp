@@ -11,14 +11,14 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     m_itemTxtLive->setFont(QFont("Times", 25, QFont::Normal));
     m_itemTxtLive->setDefaultTextColor(QColor(Qt::white));
 
-    QGraphicsTextItem* itemWordScope = this->addText("Scope");
+    QGraphicsTextItem* itemWordScope = this->addText("Time");
     itemWordScope->setPos(20, 20);
     itemWordScope->setFont(QFont("Times", 20, QFont::Normal));
     itemWordScope->setDefaultTextColor(QColor(Qt::white));
-    m_itemTxtScope = this->addText("0");
-    m_itemTxtScope->setPos(20, 50);
-    m_itemTxtScope->setFont(QFont("Times", 25, QFont::Normal));
-    m_itemTxtScope->setDefaultTextColor(QColor(Qt::white));
+    m_itemTxtTimer = this->addText(QTime(0, 3, 0).toString("mm:ss"));
+    m_itemTxtTimer->setPos(20, 50);
+    m_itemTxtTimer->setFont(QFont("Times", 25, QFont::Normal));
+    m_itemTxtTimer->setDefaultTextColor(QColor(Qt::white));
 
     m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right());
 
@@ -26,6 +26,20 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     this->addItem(m_player);
     this->connect(m_player,     &Player::fire,          this, &Battlefield::shot);
     this->connect(m_enemyGroup, &EnemyGroup::pathShot,  this, &Battlefield::collidingPlayer);
+    this->connect(m_enemyGroup, &EnemyGroup::killEnemy, this, &Battlefield::killEnemy);
+    this->connect(m_timer,      &QTimer::timeout,       this, &Battlefield::countdown);
+}
+
+void Battlefield::setSpeedShotEnemy(int msec)
+{ m_enemyGroup->setSpeed(msec); }
+
+void Battlefield::setSpeedEnemy(int msec)
+{ m_enemyGroup->setSpeedEnemy(msec); }
+
+void Battlefield::activateTime()
+{
+    m_timer->start(20);
+    m_player->setSpeed(8);
 }
 
 void Battlefield::shot(const QPoint& pos)
@@ -96,8 +110,8 @@ void Battlefield::reduceLife()
 
 void Battlefield::setScope()
 {
-    int num = m_itemTxtScope->toPlainText().toInt() + 1;
-    m_itemTxtScope->setPlainText(QString::number(num));
+    int num = m_itemTxtTimer->toPlainText().toInt() + 1;
+    m_itemTxtTimer->setPlainText(QString::number(num));
 }
 
 void Battlefield::collidingPlayer(Shot* shot)
@@ -114,4 +128,17 @@ void Battlefield::collidingEnemy(Shot* shot)
 {
     if(m_enemyGroup->collidingEnemy(shot))
         deleteShotItem(shot);
+}
+
+void Battlefield::countdown()
+{
+    QTime time = QTime::fromString(m_itemTxtTimer->toPlainText(), "mm:ss");
+    if(time == QTime(0, 0, 0))
+    {
+        emit finishGame();
+        m_timer->stop();
+        return;
+    }
+    m_itemTxtTimer->setPlainText(QTime::fromMSecsSinceStartOfDay(time.msecsSinceStartOfDay() - 1000)
+                                 .toString("mm:ss"));
 }

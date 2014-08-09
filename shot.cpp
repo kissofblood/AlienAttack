@@ -37,7 +37,7 @@ void Shot::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 
 void Shot::setSpeed(int msec)
 {
-    if(msec != -1)
+    if(msec > 0)
     {
         if(m_timerId != -1)
             this->killTimer(m_timerId);

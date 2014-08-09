@@ -30,7 +30,6 @@ public:
     void setSpeed(int msec) override;
     void stopGame() override;
     QPainterPath shape() const override;
-    void startAnimSprite(int msec);
     void attack();
     void setPosY(qreal y);
 

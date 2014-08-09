@@ -8,8 +8,7 @@ Enemy::Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVecto
     m_widthBounding = lefrAndRigh.second - 5 - lefrAndRigh.first;
     m_yFire = m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
 
-    startAnimSprite(70);
-    setSpeed(18);
+    m_animSprite->start(70);
 
     this->connect(m_animSprite, &QTimer::timeout, this, &Enemy::animSprite);
 }
@@ -27,7 +26,7 @@ void Enemy::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 
 void Enemy::setSpeed(int msec)
 {
-    if(msec != -1)
+    if(msec > 0)
     {
         if(m_timerId != -1)
             this->killTimer(m_timerId);
@@ -51,11 +50,6 @@ QPainterPath Enemy::shape() const
     QPainterPath path;
     path.addRect(m_rectSprite.x(), m_rectSprite.y(), m_rectSprite.width(), m_rectSprite.height());
     return path;
-}
-
-void Enemy::startAnimSprite(int msec)
-{
-    m_animSprite->start(msec);
 }
 
 void Enemy::attack()

@@ -32,8 +32,6 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, QGraphicsItem* parent)
             this->connect(enemy1, &Enemy::turnChange,   this, &EnemyGroup::countDownEnemy);
         }
     });
-
-    setSpeed(1000);
 }
 
 QRectF EnemyGroup::boundingRect() const
@@ -48,13 +46,21 @@ void EnemyGroup::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidg
 
 void EnemyGroup::setSpeed(int msec)
 {
-    if(msec != -1)
+    if(msec > 0)
     {
         if(m_timerId != -1)
-            this->killTimer(m_timerId);
+            this->killTimer(msec);
         m_timerId = -1;
         this->startTimer(msec);
     }
+}
+
+void EnemyGroup::setSpeedEnemy(int msec)
+{
+    std::for_each(m_enemy_.begin(), m_enemy_.end(), [msec](const QVector<Enemy*>& vecEnemy)
+    {
+       std::for_each(vecEnemy.begin(), vecEnemy.end(), std::bind(&Enemy::setSpeed, std::placeholders::_1, msec));
+    });
 }
 
 void EnemyGroup::stopGame()
@@ -63,11 +69,11 @@ void EnemyGroup::stopGame()
     {
         std::for_each(m_enemy_.begin(), m_enemy_.end(), [](const QVector<Enemy*>& vecEnemy)
         {
-            foreach(Enemy* enemy, vecEnemy)
-                enemy->stopGame();
+            std::for_each(vecEnemy.begin(), vecEnemy.end(), std::bind(&Enemy::stopGame, std::placeholders::_1));
         });
-        foreach(Shot* shot, m_shot_)
-            shot->stopGame();
+        foreach(Shot* q, m_shot_)
+            q->stopGame();
+        //std::for_each(m_shot_.begin(), m_shot_.end(), std::bind(&Shot::stopGame, std::placeholders::_1));
         this->killTimer(m_timerId);
         m_timerId = -1;
     }
@@ -90,6 +96,10 @@ bool EnemyGroup::collidingEnemy(Shot* shot)
                 m_enemy_[i].remove(j);
                 if(m_enemy_[i].empty())
                     m_enemy_.remove(i);
+                int amount = 0;
+                std::for_each(m_enemy_.begin(), m_enemy_.end(), [&amount](const QVector<Enemy*>& vecEnemy)
+                { amount += vecEnemy.size(); });
+                emit killEnemy(amount);
                 return true;
             }
     return false;

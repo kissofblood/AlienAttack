@@ -9,6 +9,7 @@
 #include <QVector>
 #include <QPoint>
 #include <algorithm>
+#include <functional>
 #include <QTimerEvent>
 #include <QSize>
 
@@ -24,12 +25,14 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
     void setSpeed(int msec) override;
+    void setSpeedEnemy(int msec);
     void stopGame() override;
     void removeShotItem(Shot* shotItem);
     bool collidingEnemy(Shot* shot);
 
 signals:
     void pathShot(Shot* shot);
+    void killEnemy(int amount);
 
 private slots:
     void shot(const QPoint& pos);
