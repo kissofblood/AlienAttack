@@ -11,6 +11,7 @@
 #include <tuple>
 #include <functional>
 #include <QGraphicsTextItem>
+#include <QTimer>
 
 class AlienAttack : public QGraphicsView
 {
@@ -22,7 +23,8 @@ public:
 private slots:
     void setSceneBattlefield();
     void restartSceneBattlefield();
-    void showData();
+    void showText();
+    void showResult();
 
 private:
     TitleScreen     *m_titlescreen  = new TitleScreen(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);

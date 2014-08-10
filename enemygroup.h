@@ -50,6 +50,7 @@ private:
     QTimer                      *m_randomShotEnemy  = new QTimer(this);
     QVector<QVector<Enemy*>>    m_enemy_;
     QVector<Shot*>              m_shot_;
+    int m_row = 4;
 
     bool outputAbroad() override;
 };

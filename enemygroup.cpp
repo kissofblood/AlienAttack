@@ -11,7 +11,7 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, Player* player, QGraph
     QVector<QPixmap> vecPix;
     for(int i = 0; i < countPix; i++)
         vecPix.push_back(QPixmap(QString(":enemy/resource/enemy/enemy1_%1").arg(QString::number(i))));
-    for(int i = 0, y = 0; i < 4; i++, y += vecPix.front().height() + 10)
+    for(int i = 0, y = 0; i < m_row; i++, y += vecPix.front().height() + 10)
     {
         QVector<Enemy*> vecEnemy;
         for(int j = 0, x = 0; j < 7; j++, x += vecPix.front().width() + 5)
@@ -44,6 +44,7 @@ QRectF EnemyGroup::boundingRect() const
 
 void EnemyGroup::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
+    Q_UNUSED(painter);
     //painter->drawRect(boundingRect());
 }
 
@@ -71,9 +72,7 @@ void EnemyGroup::stopGame()
     {
         std::for_each(vecEnemy.begin(), vecEnemy.end(), std::bind(&Enemy::stopGame, std::placeholders::_1));
     });
-    foreach(Shot* q, m_shot_)
-        q->stopGame();
-    //std::for_each(m_shot_.begin(), m_shot_.end(), std::bind(&Shot::stopGame, std::placeholders::_1));
+    std::for_each(m_shot_.begin(), m_shot_.end(), std::bind(&Shot::stopGame, std::placeholders::_1));
 }
 
 void EnemyGroup::removeShotItem(Shot* shotItem)
@@ -84,6 +83,7 @@ void EnemyGroup::removeShotItem(Shot* shotItem)
 
 bool EnemyGroup::collidingEnemy(Shot* shot)
 {
+    static bool flagBackSize = false;
     for(int i = 0; i < m_enemy_.size(); i++)
         for(int j = 0; j < m_enemy_[i].size(); j++)
             if(m_enemy_[i][j]->collidesWithItem(shot))
@@ -92,11 +92,28 @@ bool EnemyGroup::collidingEnemy(Shot* shot)
                 delete m_enemy_[i][j];
                 m_enemy_[i].remove(j);
                 if(m_enemy_[i].empty())
+                {
+                    if(i == m_enemy_.size() - 1)
+                        flagBackSize = true;
                     m_enemy_.remove(i);
+                }
+
                 int amount = 0;
                 std::for_each(m_enemy_.begin(), m_enemy_.end(), [&amount](const QVector<Enemy*>& vecEnemy)
                 { amount += vecEnemy.size(); });
                 emit killEnemy(amount);
+
+                this->prepareGeometryChange();
+                if(m_enemy_.size() < m_row && !m_enemy_.empty())
+                {
+                    if(flagBackSize)
+                    {
+                        m_sizeBoundingSprite.setHeight(m_sizeBoundingSprite.height() - m_enemy_.back()
+                                                       .back()->boundingRect().height() - 10);
+                        flagBackSize = false;
+                    }
+                    m_row = m_enemy_.size();
+                }
                 return true;
             }
     return false;
@@ -129,13 +146,13 @@ void EnemyGroup::countDownEnemy(Common::MoveSprite moveSprite)
     if(moveSprite == Common::MoveSprite::TurnRight)
         count += 1;
 
-    if(count == m_enemy_.size())
+    if(count >= m_enemy_.size())
     {
         countY += 1;
         count = 0;
     }
 
-    if(countY == 2)
+    if(countY == 1)
     {
         this->prepareGeometryChange();
         m_posBoundingSprite.ry() += 20;
@@ -144,7 +161,7 @@ void EnemyGroup::countDownEnemy(Common::MoveSprite moveSprite)
             std::for_each(vecEnemy.begin(), vecEnemy.end(), std::bind(
                               &Enemy::setPosY, std::placeholders::_1, m_posBoundingSprite.y()));
         });
-        countY = 0;
+        countY = count = 0;
         if(outputAbroad())
             emit gameOver();
     }

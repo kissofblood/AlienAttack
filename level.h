@@ -24,6 +24,7 @@ public:
 
     void setFun(const std::tuple<FunSpeed, FunSpeed, FunTimer>& fun);
     void initialData(int speedShotEnemy, int speedEnemy);
+    void showResultGameOver();
 
 signals:
     void victory();

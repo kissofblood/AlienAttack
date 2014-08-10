@@ -7,7 +7,6 @@ Level::Level(const QRectF& rect, QObject* parent) : QGraphicsScene(rect, parent)
     m_txtItemAmount->setPos(rect.width() / 2 - 150, rect.height() / 2 - 100);
     m_txtItemAmount->setFont(QFont("Times", 20, QFont::Normal));
     m_txtItemAmount->setDefaultTextColor(QColor(Qt::black));
-    m_txtItemAmount->hide();
 }
 
 void Level::setFun(const std::tuple<Level::FunSpeed, Level::FunSpeed, Level::FunTimer>& fun)
@@ -33,21 +32,28 @@ void Level::amountKillEnemy(int amount)
         m_speedShotEnemy(m_initialDataFun.first);
         m_speedEnemy(m_initialDataFun.second);
     }
+    else if(amount == 0)
+        finishLevel();
 }
 
 void Level::finishLevel()
 {
     m_level += 1;
-    m_txtItemAmount->setPlainText(m_txtAmount.arg(QString::number(m_amount)));
-    m_txtItemAmount->show();
+    m_txtItemAmount->setPlainText(m_txtAmount.arg(QString::number(m_amount)) + "\t" + QString::number(m_level - 1));
     emit victory();
 
     QTimer::singleShot(1000, this, SLOT(activateLevel()));
     m_amount = 0;
 }
 
+void Level::showResultGameOver()
+{
+    m_txtItemAmount->setPlainText(m_txtAmount.arg(QString::number(m_amount)) + "\t" + QString::number(m_level - 1));
+}
+
 void Level::activateLevel()
 {
+    m_initialDataFun.second = 25;
     m_speedShotEnemy(m_initialDataFun.first -= 1);
     m_speedEnemy(m_initialDataFun.second);
     m_activateTimer();

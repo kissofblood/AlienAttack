@@ -10,26 +10,27 @@ AlienAttack::AlienAttack(QWidget* parent) : QGraphicsView(parent)
     this->connect(m_level, &Level::nextLevel, [this]()
     {
         this->setScene(m_battlefield);
-        this->connect(m_battlefield, &Battlefield::killEnemy,  m_level, &Level::amountKillEnemy);
+        this->connect(m_battlefield, &Battlefield::killEnemy,  m_level, &Level::amountKillEnemy, Qt::QueuedConnection);
         this->connect(m_battlefield, &Battlefield::finishGame, m_level, &Level::finishLevel);
+        this->connect(m_battlefield, &Battlefield::gameOver, this, &AlienAttack::showText);
     });
 }
 
 void AlienAttack::setSceneBattlefield()
 {
     m_battlefield = new Battlefield(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
-    m_battlefield->setSpeedShotEnemy(3000);
-    m_battlefield->setSpeedEnemy(30);
+    //m_battlefield->setSpeedShotEnemy(3000);
+    m_battlefield->setSpeedEnemy(25);
     m_battlefield->activateTime();
-    m_level->initialData(3000, 30);
+    m_level->initialData(3000, 25);
     m_level->setFun(std::make_tuple(
                         std::bind(&Battlefield::setSpeedShotEnemy, m_battlefield, std::placeholders::_1),
                         std::bind(&Battlefield::setSpeedEnemy,     m_battlefield, std::placeholders::_1),
                         std::bind(&Battlefield::activateTime,      m_battlefield)));
     this->setScene(m_battlefield);
-    this->connect(m_battlefield, &Battlefield::killEnemy,  m_level, &Level::amountKillEnemy);
+    this->connect(m_battlefield, &Battlefield::killEnemy,  m_level, &Level::amountKillEnemy, Qt::QueuedConnection);
     this->connect(m_battlefield, &Battlefield::finishGame, m_level, &Level::finishLevel);
-    this->connect(m_battlefield, &Battlefield::gameOver, this, &AlienAttack::showData);
+    this->connect(m_battlefield, &Battlefield::gameOver, this, &AlienAttack::showText);
     delete m_titlescreen;
 }
 
@@ -44,10 +45,18 @@ void AlienAttack::restartSceneBattlefield()
                         std::bind(&Battlefield::activateTime,      m_battlefield)));
 }
 
-void AlienAttack::showData()
+void AlienAttack::showText()
 {
     QGraphicsTextItem* txtGameOver = m_battlefield->addText("хуйло");
     txtGameOver->setPos(100, 100);
     txtGameOver->setFont(QFont("Times", 30, QFont::Normal));
-    txtGameOver->setDefaultTextColor(QColor(Qt::black));
+    txtGameOver->setDefaultTextColor(QColor(Qt::white));
+
+    QTimer::singleShot(2000, this, SLOT(showResult()));
+}
+
+void AlienAttack::showResult()
+{
+    this->setScene(m_level);
+    m_level->showResultGameOver();
 }

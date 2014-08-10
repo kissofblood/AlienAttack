@@ -39,6 +39,7 @@ signals:
 
 private slots:
     void animExplosion();
+    void brieflyTimeShot();
 
 private:
     QPoint              m_posBoundingSprite;
@@ -51,6 +52,7 @@ private:
     int                 m_timerId    = -1;
     int                 m_frameIndex = 0;
     bool                m_flagExplosion = false;
+    bool                m_flagShot      = true; //Временно запрещать стрельбу
 
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;

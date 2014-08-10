@@ -55,8 +55,12 @@ void Player::keyPressEvent(QKeyEvent* event)
     else if(event->key() == Qt::Key_D || event->key() == Qt::Key_Right)
         m_moveSprite = Common::MoveSprite::TurnRight;
 
-    if(event->key() == Qt::Key_Space && m_timerId != -1)
+    if(event->key() == Qt::Key_Space && m_timerId != -1 && m_flagShot)
+    {
         emit fire(QPoint(m_rectSprite.left() + m_rectSprite.width() / 2 - 3, m_rectSprite.top()));
+        m_flagShot = false;
+        QTimer::singleShot(250, this, SLOT(brieflyTimeShot()));
+    }
 }
 
 void Player::keyReleaseEvent(QKeyEvent* event)
@@ -97,6 +101,9 @@ void Player::animExplosion()
         m_animExplosion->stop();
     this->update();
 }
+
+void Player::brieflyTimeShot()
+{ m_flagShot = true; }
 
 void Player::explosion()
 {

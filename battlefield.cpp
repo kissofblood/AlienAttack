@@ -24,11 +24,11 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
 
     this->addItem(m_enemyGroup);
     this->addItem(m_player);
-    this->connect(m_player,     &Player::fire,          this, &Battlefield::shot);
-    this->connect(m_enemyGroup, &EnemyGroup::pathShot,  this, &Battlefield::collidingPlayer);
-    this->connect(m_enemyGroup, &EnemyGroup::killEnemy, this, &Battlefield::killEnemy);
-    this->connect(m_enemyGroup, &EnemyGroup::gameOver,  this, &Battlefield::stopGame);
-    this->connect(m_timer,      &QTimer::timeout,       this, &Battlefield::countdown);
+    this->connect(m_player,     &Player::fire,           this, &Battlefield::shot);
+    this->connect(m_enemyGroup, &EnemyGroup::pathShot,   this, &Battlefield::collidingPlayer);
+    this->connect(m_enemyGroup, &EnemyGroup::killEnemy,  this, &Battlefield::killEnemy);
+    this->connect(m_enemyGroup, &EnemyGroup::gameOver,   this, &Battlefield::stopGame);
+    this->connect(m_timer,      &QTimer::timeout,        this, &Battlefield::countdown);
 }
 
 void Battlefield::setSpeedShotEnemy(int msec)
