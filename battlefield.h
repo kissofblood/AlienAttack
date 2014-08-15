@@ -2,7 +2,8 @@
 #define BATTLEFIELD_H
 
 #include "player.h"
-#include "enemygroup.h"
+#include "spriteEnemy/enemygroup.h"
+#include "spriteEnemy/helpenemy.h"
 #include "shot.h"
 #include "common.h"
 #include <QObject>

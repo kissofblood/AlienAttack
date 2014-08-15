@@ -39,16 +39,17 @@ void Level::amountKillEnemy(int amount)
 void Level::finishLevel()
 {
     m_level += 1;
-    m_txtItemAmount->setPlainText(m_txtAmount.arg(QString::number(m_amount)) + "\t" + QString::number(m_level - 1));
+    m_txtItemAmount->setPlainText("Level " + QString::number(m_level - 1) + "\n"
+                                + m_txtAmount.arg(QString::number(m_amount)));
     emit victory();
-
     QTimer::singleShot(1000, this, SLOT(activateLevel()));
     m_amount = 0;
 }
 
 void Level::showResultGameOver()
 {
-    m_txtItemAmount->setPlainText(m_txtAmount.arg(QString::number(m_amount)) + "\t" + QString::number(m_level - 1));
+    m_txtItemAmount->setPlainText("Level " + QString::number(m_level - 1) + "\n"
+                                + m_txtAmount.arg(QString::number(m_amount)));
 }
 
 void Level::activateLevel()

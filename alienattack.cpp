@@ -19,7 +19,7 @@ AlienAttack::AlienAttack(QWidget* parent) : QGraphicsView(parent)
 void AlienAttack::setSceneBattlefield()
 {
     m_battlefield = new Battlefield(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
-    //m_battlefield->setSpeedShotEnemy(3000);
+    m_battlefield->setSpeedShotEnemy(3000);
     m_battlefield->setSpeedEnemy(25);
     m_battlefield->activateTime();
     m_level->initialData(3000, 25);
@@ -47,10 +47,10 @@ void AlienAttack::restartSceneBattlefield()
 
 void AlienAttack::showText()
 {
-    QGraphicsTextItem* txtGameOver = m_battlefield->addText("хуйло");
-    txtGameOver->setPos(100, 100);
-    txtGameOver->setFont(QFont("Times", 30, QFont::Normal));
-    txtGameOver->setDefaultTextColor(QColor(Qt::white));
+    QGraphicsTextItem* txtGameOver = m_battlefield->addText("Game Over");
+    txtGameOver->setPos(this->width() / 2 - 100, 20);
+    txtGameOver->setFont(QFont("Times", 60, QFont::Bold));
+    txtGameOver->setDefaultTextColor(QColor(Qt::red));
 
     QTimer::singleShot(2000, this, SLOT(showResult()));
 }
