@@ -1,5 +1,18 @@
 #include "enemy.h"
 
+Enemy::Enemy(const QPoint& pos, const QVector<QPixmap>& pix, QGraphicsItem* parent) : AbstractSprite(parent)
+    , m_posBoundingSprite(pos)
+    , m_pixSprite_(pix)
+    , m_rectSprite(pos.x(), pos.y(), pix.front().width(), pix.front().height())
+{
+    m_widthBounding = pix.front().width();
+    m_yFire = m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
+    m_animSpriteUpdate = true;
+
+    m_animSprite->start(70);
+    this->connect(m_animSprite, &QTimer::timeout, this, &Enemy::animSprite);
+}
+
 Enemy::Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVector<QPixmap>& pix, QGraphicsItem* parent) : AbstractSprite(parent)
     , m_posBoundingSprite(lefrAndRigh.first, pos.y())
     , m_pixSprite_(pix)
@@ -9,8 +22,23 @@ Enemy::Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVecto
     m_yFire = m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
 
     m_animSprite->start(70);
-
     this->connect(m_animSprite, &QTimer::timeout, this, &Enemy::animSprite);
+}
+
+Enemy& Enemy::operator =(const Enemy& enemy)
+{
+    if(&enemy == this)
+        return *this;
+    this->prepareGeometryChange();
+    m_posBoundingSprite  = enemy.m_posBoundingSprite;
+    m_moveSprite         = enemy.m_moveSprite;
+    m_widthBounding      = enemy.m_widthBounding;
+    m_yFire              = enemy.m_yFire;
+    m_animSpriteUpdate   = false;
+    m_stopScenePosSprite = true;
+    m_rectSprite.moveLeft(enemy.m_rectSprite.right() + 5);
+    setSpeed(enemy.m_speedSprite);
+    return *this;
 }
 
 QRectF Enemy::boundingRect() const
@@ -20,7 +48,7 @@ QRectF Enemy::boundingRect() const
 
 void Enemy::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    //painter->drawRect(boundingRect());
+    painter->drawRect(boundingRect());
     painter->drawPixmap(m_rectSprite, m_pixSprite_[m_frameIndex]);
 }
 
@@ -31,6 +59,7 @@ void Enemy::setSpeed(int msec)
         if(m_timerId != -1)
             this->killTimer(m_timerId);
         m_timerId = -1;
+        m_speedSprite = msec;
         this->startTimer(msec);
     }
 }
@@ -57,16 +86,48 @@ void Enemy::attack()
     emit fire(QPoint(m_rectSprite.left() + m_rectSprite.width() / 2 - 3, m_yFire));
 }
 
-void Enemy::setPosY(qreal y)
+void Enemy::setPosYSpite(qreal y)
 {
     this->setY(y - 20);
     m_yFire += this->pos().y() - m_yFire;
     m_yFire += m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
 }
 
+QPoint Enemy::posSpiteTopLeft() const
+{
+    if(this->pos().y() == 20)
+        return QPoint(m_rectSprite.left(), m_posBoundingSprite.y());
+    else
+        return QPoint(m_rectSprite.left(), m_posBoundingSprite.y() + this->pos().y());
+}
+
+QPoint Enemy::posSpriteTopRight() const
+{
+    if(this->pos().y() == 20)
+        return QPoint(m_rectSprite.right(), m_posBoundingSprite.y());
+    else
+        return QPoint(m_rectSprite.right(), m_posBoundingSprite.y() + this->pos().y());
+}
+
+QPoint Enemy::scenePosSprite() const
+{
+    return m_posBoundingSprite;
+}
+
+void Enemy::setScenePosSprite(const QPoint& pos)
+{
+    if(!m_stopScenePosSprite)
+    {
+        this->prepareGeometryChange();
+        m_posBoundingSprite = pos;
+        m_rectSprite.moveTopLeft(pos);
+    }
+}
+
 void Enemy::setTurn(Common::MoveSprite moveSprite)
 {
-    m_rectSprite.moveLeft(m_rectSprite.left() - 2);
+    if(!m_stopScenePosSprite)
+        m_rectSprite.moveLeft(m_rectSprite.left() - 2);
     m_moveSprite = moveSprite;
 }
 
@@ -84,6 +145,9 @@ void Enemy::animSprite()
         if(m_frameIndex == 0)
             m_flagForwardOrBack = true;
     }
+
+    if(m_animSpriteUpdate)
+        this->update(boundingRect());
 }
 
 void Enemy::timerEvent(QTimerEvent* event)

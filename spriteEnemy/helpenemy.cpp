@@ -6,18 +6,18 @@ HelpEnemy::HelpEnemy(QGraphicsItem* parent) : QObject(nullptr), QGraphicsPixmapI
     for(int i = 0; i < countPix; i++)
         m_pixEnemy_.push_back(QPixmap(QString(":enemy/resource/enemy/enemy1_%1").arg(QString::number(i))));
 
-    this->connect(m_animEnemy, &QTimer::timeout, this, &HelpEnemy::animEnemy);
-    m_animEnemy->start(70);
+    QTimer* animHelp = new QTimer(this);
+    this->connect(animHelp, &QTimer::timeout, this, &HelpEnemy::animEnemy);
+    animHelp->start(70);
 }
 
-void HelpEnemy::animationHelp1(const QPointF& pos)
+void HelpEnemy::animationHelp_1(Enemy* enemy, const QPointF& pos)
 {
-    QPropertyAnimation* anim = new QPropertyAnimation(this, "pos");
-    anim->setDuration(1000);
+    QPropertyAnimation* anim = new QPropertyAnimation(enemy, "scenePosSprite");
+    anim->setDuration(100);
     anim->setEndValue(pos);
     anim->setEasingCurve(QEasingCurve::Linear);
-
-    anim->start(QAbstractAnimation::DeleteWhenStopped)  ;
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void HelpEnemy::animEnemy()

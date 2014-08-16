@@ -22,9 +22,12 @@
 class Enemy : public AbstractSprite
 {
     Q_OBJECT
+    Q_PROPERTY(QPoint scenePosSprite READ scenePosSprite WRITE setScenePosSprite)
 public:
+    Enemy(const QPoint& pos, const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
     Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
     ~Enemy() = default;
+    Enemy& operator =(const Enemy& enemy);
 
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
@@ -32,7 +35,11 @@ public:
     void stopGame() override;
     QPainterPath shape() const override;
     void attack();
-    void setPosY(qreal y);
+    void setPosYSpite(qreal y);
+    QPoint posSpiteTopLeft() const;
+    QPoint posSpriteTopRight() const;
+    QPoint scenePosSprite() const;
+    void setScenePosSprite(const QPoint& pos);
 
 signals:
     void fire(const QPoint& point);
@@ -55,6 +62,9 @@ private:
     bool                m_flagForwardOrBack = true;
     int                 m_widthBounding;
     int                 m_yFire;
+    bool                m_animSpriteUpdate   = false;
+    int                 m_speedSprite        = -1;
+    bool                m_stopScenePosSprite = false;
 
     void timerEvent(QTimerEvent* event) override;
     bool outputAbroad() override;

@@ -6,7 +6,10 @@ Player::Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsI
     , m_rectSprite(pos.x(), pos.y(), pix.width(), pix.height())
 {
     this->setFlag(QGraphicsItem::ItemIsFocusable);
-    this->setFocus();
+    QTimer* timer = new QTimer(this);
+    this->connect(timer, &QTimer::timeout, this, [this]()
+    { this->setFocus(); });
+    timer->start(1000);
 
     m_widthBounding = rightScene - 5 - pos.x();
     m_moveSprite = Common::MoveSprite::Stop;

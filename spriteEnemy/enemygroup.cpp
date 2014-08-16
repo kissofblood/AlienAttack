@@ -24,9 +24,9 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, Player* player, QGraph
 
     std::for_each(m_enemy_.begin(), m_enemy_.end(), [this](const QVector<Enemy*>& vecEnemy)
     {
-        foreach(Enemy* enemy1, vecEnemy)
+        for(Enemy* enemy1 : vecEnemy)
         {
-            foreach(Enemy* enemy2, vecEnemy)
+            for(Enemy* enemy2 : vecEnemy)
                 if(enemy1 != enemy2)
                     this->connect(enemy1, &Enemy::turnChange, enemy2, &Enemy::setTurn);
             this->connect(enemy1, &Enemy::fire,         this, &EnemyGroup::shot);
@@ -35,6 +35,23 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, Player* player, QGraph
     });
 
     this->connect(m_randomShotEnemy, &QTimer::timeout, this, &EnemyGroup::randomShotEnemy);
+
+
+    /*for(int i = 0; i < m_enemy_.size() - 1; i++)
+    {
+        for(int j = 0; j < m_enemy_[i].size(); j++)
+        {
+            m_enemy_[i][j]->hide();
+        }
+    }
+
+    int i = m_enemy_.size() - 1;
+    for(int j = 2; j < m_enemy_[i].size(); j++)
+    {
+        m_enemy_[i][j]->hide();
+    }
+
+    m_enemy_[i][0]->hide();*/
 }
 
 QRectF EnemyGroup::boundingRect() const
@@ -44,8 +61,8 @@ QRectF EnemyGroup::boundingRect() const
 
 void EnemyGroup::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    Q_UNUSED(painter);
-    //painter->drawRect(boundingRect());
+    //Q_UNUSED(painter);
+    painter->drawRect(boundingRect());
 }
 
 void EnemyGroup::setSpeed(int msec)
@@ -63,6 +80,7 @@ void EnemyGroup::setSpeedEnemy(int msec)
     {
        std::for_each(vecEnemy.begin(), vecEnemy.end(), std::bind(&Enemy::setSpeed, std::placeholders::_1, msec));
     });
+    m_speedEnemy = msec;
 }
 
 void EnemyGroup::stopGame()
@@ -91,6 +109,17 @@ bool EnemyGroup::collidingEnemy(Shot* shot)
                 m_group->removeFromGroup(m_enemy_[i][j]);
                 delete m_enemy_[i][j];
                 m_enemy_[i].remove(j);
+                m_helpEnemy->start(m_speedEnemy);
+
+                const int countPix = 10;
+                QVector<QPixmap> vecPix;
+                for(int i = 0; i < countPix; i++)
+                    vecPix.push_back(QPixmap(QString(":enemy/resource/enemy/enemy1_%1").arg(QString::number(i))));
+                m_enemy = new Enemy(m_posStartEnemy, vecPix, this);
+
+                this->connect(m_helpEnemy, &QTimer::timeout,
+                this, std::bind(&EnemyGroup::helpEnemy, this, m_enemy));
+
                 if(m_enemy_[i].empty())
                 {
                     if(i == m_enemy_.size() - 1)
@@ -117,6 +146,24 @@ bool EnemyGroup::collidingEnemy(Shot* shot)
                 return true;
             }
     return false;
+}
+
+void EnemyGroup::setAnimation(HelpEnemy* helpEnemy)
+{
+    m_help = helpEnemy;
+    m_posStartEnemy = QPoint(helpEnemy->pos().x(), helpEnemy->pos().y());
+}
+
+void EnemyGroup::showEnemy(Enemy* enemy)
+{
+    enemy->setParentItem(this);
+}
+
+void EnemyGroup::insertNemy(Enemy* enemy)
+{
+    Q_UNUSED(enemy);
+    qDebug()<<"STOP";
+    m_helpEnemy->stop();
 }
 
 void EnemyGroup::shot(const QPoint& pos)
@@ -152,14 +199,16 @@ void EnemyGroup::countDownEnemy(Common::MoveSprite moveSprite)
         count = 0;
     }
 
-    if(countY == 1)
+    if(countY == 10)
     {
+        static int posY = m_posBoundingSprite.y();
         this->prepareGeometryChange();
-        m_posBoundingSprite.ry() += 20;
+        posY += 20;
+        m_sizeBoundingSprite.setHeight(m_sizeBoundingSprite.height() + 20);
         std::for_each(m_enemy_.begin(), m_enemy_.end(), [this](const QVector<Enemy*>& vecEnemy)
         {
             std::for_each(vecEnemy.begin(), vecEnemy.end(), std::bind(
-                              &Enemy::setPosY, std::placeholders::_1, m_posBoundingSprite.y()));
+                              &Enemy::setPosYSpite, std::placeholders::_1, posY));
         });
         countY = count = 0;
         if(outputAbroad())
@@ -177,6 +226,41 @@ void EnemyGroup::randomShotEnemy()
     int row = qrand() % m_enemy_.size();
     int column = qrand() % m_enemy_[row].size();
     m_enemy_[row][column]->attack();
+}
+
+void EnemyGroup::helpEnemy(Enemy* enemy)
+{
+    int back = m_enemy_.size() - 1;
+    // for(int i = 0, j = 1; i < m_enemy_.back().size(); i++)
+     {
+         int width = m_enemy_[back][1]->posSpiteTopLeft().x()
+                     - m_enemy_[back][0]->posSpriteTopRight().x();
+         if(width == 6)
+         {
+             return;
+         }
+
+         if(m_enemy_[back][0]->posSpriteTopRight().y() + 1 == m_enemy->posSpiteTopLeft().y())
+         {
+             qDebug()<<"STOP";
+             m_helpEnemy->stop();
+             m_enemy->operator =(*m_enemy_[back][0]);
+             m_enemy_[back].push_back(m_enemy);
+
+
+             this->connect(m_enemy_[back][0], &Enemy::turnChange, m_enemy, &Enemy::setTurn);
+             this->connect(m_enemy_[back][m_enemy_[back].size() - 2
+                  ], &Enemy::turnChange, m_enemy, &Enemy::setTurn);
+             this->connect(m_enemy, &Enemy::fire,         this, &EnemyGroup::shot);
+             this->connect(m_enemy, &Enemy::turnChange,   this, &EnemyGroup::countDownEnemy);
+
+             return;
+         }
+
+         m_help->animationHelp_1(enemy, QPoint(m_enemy_[back][0]->posSpriteTopRight().x() + 5
+                                 , m_enemy_[back][0]->posSpriteTopRight().y()));
+
+     }
 }
 
 bool EnemyGroup::outputAbroad()

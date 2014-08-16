@@ -62,6 +62,7 @@ private:
     QGraphicsTextItem   *m_itemTxtTimer  = nullptr;
     QStateMachine       *m_stateMachine  = new QStateMachine(this);
     QTimer              *m_timer         = new QTimer(this);
+    HelpEnemy           *m_helpEnemy     = new HelpEnemy;
     QVector<Shot*>      m_shot_;
 };
 
