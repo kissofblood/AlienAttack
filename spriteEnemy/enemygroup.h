@@ -44,7 +44,7 @@ private slots:
     void countDownEnemy(Common::MoveSprite moveSprite);
     void randomShotEnemy();
     void randomHelpEnemy();
-    void insertHelpEnemy(QTimer* timer, QVector<QPair<Enemy*, Enemy*>>& randNewEnemy);
+    void insertHelpEnemy(QTimer* timer);
 
 private:
     QPoint                      m_posBoundingSprite;
@@ -57,7 +57,8 @@ private:
     QVector<Shot*>              m_shot_;
     QVector<QPixmap>            m_pixEnemy;
     QPoint                      m_posStartEnemy;
-    QVector<std::function<void(Enemy*, QPoint, bool)>> m_animationHelp_;
+    QVector<QPair<Enemy*, Enemy*>>               m_randNewEnemy_;
+    QVector<std::function<void(Enemy*, QPoint)>> m_animationHelp_;
     int m_row           = 4;
     int m_countYDown    = 0;
     int m_speedEnemy;

@@ -17,7 +17,7 @@ public:
     HelpEnemy(QGraphicsItem* parent = nullptr);
     ~HelpEnemy() = default;
 
-    void animationHelp_1(Enemy* enemy, const QPoint& pos, bool deleteAnim);
+    void animationHelp_1(Enemy* enemy, const QPoint& pos);
 
 private slots:
     void animEnemy();

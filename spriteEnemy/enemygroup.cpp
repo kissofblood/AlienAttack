@@ -33,7 +33,7 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, Player* player, QGraph
         }
     });
 
-    this->connect(m_randHelpEnemy, &QTimer::timeout, this, &EnemyGroup::randomHelpEnemy);
+    this->connect(m_randHelpEnemy, &QTimer::timeout, this, &EnemyGroup::randomHelpEnemy, Qt::QueuedConnection);
     m_randHelpEnemy->start(5000);
 
     /*for(int i = 0; i < m_enemy_.size() - 1; i++)
@@ -107,6 +107,7 @@ bool EnemyGroup::collidingEnemy(Shot* shot)
             {
                 m_group->removeFromGroup(m_enemy_[i][j]);
                 delete m_enemy_[i][j];
+                m_enemy_[i][j] = nullptr;
                 m_enemy_[i].remove(j);
                 if(m_enemy_[i].empty())
                 {
@@ -140,7 +141,7 @@ void EnemyGroup::setAnimation(HelpEnemy* helpEnemy)
 {
     m_posStartEnemy = QPoint(helpEnemy->pos().x(), helpEnemy->pos().y());
     m_animationHelp_.push_back(std::bind(&HelpEnemy::animationHelp_1, helpEnemy,
-                                         std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+                                         std::placeholders::_1, std::placeholders::_2));
 }
 
 void EnemyGroup::shot(const QPoint& pos)
@@ -175,7 +176,7 @@ void EnemyGroup::countDownEnemy(Common::MoveSprite moveSprite)
         count = 0;
     }
 
-    if(m_countYDown == 10)
+    if(m_countYDown == 1000)
     {
         static int posY = m_posBoundingSprite.y();
         this->prepareGeometryChange();
@@ -206,6 +207,8 @@ void EnemyGroup::randomShotEnemy()
 
 void EnemyGroup::randomHelpEnemy()
 {
+    m_randNewEnemy_.clear();
+
     QVector<Enemy*> leftEnemy;
     for(auto& vecEnemy : m_enemy_)
         for(int i = 1; i < vecEnemy.size(); i++)
@@ -225,88 +228,103 @@ void EnemyGroup::randomHelpEnemy()
 
     qDebug()<<"left"<<leftEnemy.size();
     m_randHelpEnemy->stop();
-    QVector<QPair<Enemy*, Enemy*>> randNewEnemy;
     int amountHelpEnemy = qrand() % leftEnemy.size();
     forever
     {
         Enemy* tmp = leftEnemy[qrand() % leftEnemy.size()];
-        if(std::find_if(randNewEnemy.begin(), randNewEnemy.end(), [tmp](const QPair<Enemy*, Enemy*>& pair)->bool
-        { return pair.second == tmp; }) == randNewEnemy.end())
+        if(std::find_if(m_randNewEnemy_.begin(), m_randNewEnemy_.end(), [tmp](const QPair<Enemy*, Enemy*>& pair)->bool
+        { return pair.second == tmp; }) == m_randNewEnemy_.end())
         {
             Enemy* newEnemy = new Enemy(m_posStartEnemy, m_pixEnemy, this);
-            randNewEnemy.push_back(qMakePair(newEnemy, tmp));
+            m_randNewEnemy_.push_back(qMakePair(newEnemy, tmp));
         }
-        if(amountHelpEnemy == randNewEnemy.size() - 1)
+        if(amountHelpEnemy == m_randNewEnemy_.size() - 1)
             break;
     }
 
-    qDebug()<<"rand"<<randNewEnemy.size();
+    qDebug()<<"rand"<<m_randNewEnemy_.size();
     QTimer* helpEnemy = new QTimer(this);
     helpEnemy->start(m_speedEnemy);
-    this->connect(helpEnemy, &QTimer::timeout, this, std::bind(&EnemyGroup::insertHelpEnemy, this, helpEnemy, randNewEnemy), Qt::QueuedConnection);
+    this->connect(helpEnemy, &QTimer::timeout, this, std::bind(&EnemyGroup::insertHelpEnemy, this, helpEnemy), Qt::QueuedConnection);
 
-    qDebug()<<"rand"<<randNewEnemy.size();
+    qDebug()<<"rand"<<m_randNewEnemy_.size();
     qDebug()<<"left"<<leftEnemy.size();
 
 }
 
-void EnemyGroup::insertHelpEnemy(QTimer* timer, QVector<QPair<Enemy*, Enemy*>>& randNewEnemy)
+void EnemyGroup::insertHelpEnemy(QTimer* timer)
 {
-    qDebug()<<"START";
-    for(int i = 0; i < randNewEnemy.size(); i++)
+    static int count = 0;
+    qDebug()<<"START"<<count++;
+    for(int i = 0; i < m_randNewEnemy_.size(); i++)
     {
-        auto& pairEnemy = randNewEnemy[i];
-        if(pairEnemy.first->posSpiteTopLeft().y() == pairEnemy.second->posSpriteTopRight().y() + 1)
+        qDebug()<<(m_randNewEnemy_[i].first == m_randNewEnemy_[i].second);
+        qDebug()<<m_randNewEnemy_[i].first->posSpiteTopLeft()<<m_randNewEnemy_[i].second->posSpriteTopRight();
+        qDebug()<<"randNewEnemy"<<m_randNewEnemy_.size();
+
+        if(m_randNewEnemy_[i].first != nullptr && m_randNewEnemy_[i].second != nullptr)
         {
-            pairEnemy.first->operator =(*pairEnemy.second);
-            pairEnemy.first->setParentItem(nullptr);
-            m_group->addToGroup(pairEnemy.first);
-            for(auto& vecEnemy : m_enemy_)
+            if(m_randNewEnemy_[i].first->posSpiteTopLeft().y() == m_randNewEnemy_[i].second->posSpriteTopRight().y() + 1
+                  || m_randNewEnemy_[i].first->posSpiteTopLeft().y() == m_randNewEnemy_[i].second->posSpriteTopRight().y())
             {
-                bool flagBreak = false;
-                int indexInsert = 0;
-                for(; indexInsert < vecEnemy.size(); indexInsert++)
-                    if(vecEnemy[indexInsert] == pairEnemy.second)
+                qDebug()<<m_randNewEnemy_[i].first->posSpiteTopLeft()<<m_randNewEnemy_[i].second->posSpriteTopRight()<<"!!!!!";
+                m_randNewEnemy_[i].first->operator =(*m_randNewEnemy_[i].second);
+                m_group->addToGroup(m_randNewEnemy_[i].first);
+                for(auto& vecEnemy : m_enemy_)
+                {
+                    bool flagBreak = false;
+                    int indexInsert = 0;
+                    for(; indexInsert < vecEnemy.size(); indexInsert++)
                     {
-                        flagBreak = true;
+                        if(vecEnemy[indexInsert] != nullptr)
+                            if(vecEnemy[indexInsert] == m_randNewEnemy_[i].second)
+                            {
+                                flagBreak = true;
+                                break;
+                            }
+                    }
+                    if(flagBreak)
+                    {
+                        vecEnemy.insert(indexInsert + 1, m_randNewEnemy_[i].first);
+
+                        for(Enemy* enemyConnect : vecEnemy)
+                        {
+                            if(enemyConnect != nullptr)
+                                if(enemyConnect != m_randNewEnemy_[i].first)
+                                {
+                                    this->connect(enemyConnect, &Enemy::turnChange, m_randNewEnemy_[i].first, &Enemy::setTurn);
+                                    this->connect(m_randNewEnemy_[i].first, &Enemy::turnChange, enemyConnect, &Enemy::setTurn);
+                                }
+                        }
+                        this->connect(m_randNewEnemy_[i].first, &Enemy::fire,        this, &EnemyGroup::shot);
+                        this->connect(m_randNewEnemy_[i].first, &Enemy::turnChange,  this, &EnemyGroup::countDownEnemy);
+
                         break;
                     }
-                if(flagBreak)
-                {
-                    vecEnemy.insert(indexInsert + 1, pairEnemy.first);
-
-                    for(Enemy* enemyConnect : vecEnemy)
-                        if(enemyConnect != pairEnemy.first)
-                        {
-                            this->connect(enemyConnect, &Enemy::turnChange, pairEnemy.first, &Enemy::setTurn);
-                            this->connect(pairEnemy.first, &Enemy::turnChange, enemyConnect, &Enemy::setTurn);
-                        }
-                    this->connect(pairEnemy.first, &Enemy::fire,        this, &EnemyGroup::shot);
-                    this->connect(pairEnemy.first, &Enemy::turnChange,  this, &EnemyGroup::countDownEnemy);
-
-                    break;
                 }
+                qDebug()<<"enemy!_"<<m_enemy_.back().size();
+
+                m_randNewEnemy_.removeAt(i);
+
+                qDebug()<<"randNewEnemy"<<m_randNewEnemy_.size();
+                break;
             }
-            qDebug()<<"enemy!_"<<m_enemy_.back().size();
-            qDebug()<<"randNewEnemy"<<randNewEnemy.size();
 
-            QPoint point(pairEnemy.second->posSpriteTopRight().x() + 5, pairEnemy.second->posSpriteTopRight().y());
-            m_animationHelp_[qrand() % m_animationHelp_.size()](pairEnemy.first, point, true);
 
-            randNewEnemy.remove(i);
-
-            qDebug()<<"randNewEnemy"<<randNewEnemy.size();
-            break;
-
+            else
+            {
+                QPoint point(m_randNewEnemy_[i].second->posSpriteTopRight().x() + 5, m_randNewEnemy_[i].second->posSpriteTopRight().y());
+                m_animationHelp_[qrand() % m_animationHelp_.size()](m_randNewEnemy_[i].first, point);
+            }
         }
         else
         {
-            QPoint point(pairEnemy.second->posSpriteTopRight().x() + 5, pairEnemy.second->posSpriteTopRight().y());
-            m_animationHelp_[qrand() % m_animationHelp_.size()](pairEnemy.first, point, false);
+            m_randNewEnemy_.removeAt(i);
+            break;
         }
     }
 
-    if(randNewEnemy.empty())
+    if(m_randNewEnemy_.empty())
     {
         timer->stop();
         qDebug()<<"FDS";
