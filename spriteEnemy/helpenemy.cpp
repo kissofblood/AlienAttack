@@ -11,13 +11,19 @@ HelpEnemy::HelpEnemy(QGraphicsItem* parent) : QObject(nullptr), QGraphicsPixmapI
     animHelp->start(70);
 }
 
-void HelpEnemy::animationHelp_1(Enemy* enemy, const QPointF& pos)
+void HelpEnemy::animationHelp_1(Enemy* enemy, const QPoint& pos, bool deleteAnim)
 {
-    QPropertyAnimation* anim = new QPropertyAnimation(enemy, "scenePosSprite");
-    anim->setDuration(100);
-    anim->setEndValue(pos);
-    anim->setEasingCurve(QEasingCurve::Linear);
-    anim->start(QAbstractAnimation::DeleteWhenStopped);
+    QPropertyAnimation* anim = nullptr;
+    if(deleteAnim)
+        delete anim;
+    else
+    {
+        anim = new QPropertyAnimation(enemy, "scenePosSprite");
+        anim->setDuration(100);
+        anim->setEndValue(pos);
+        anim->setEasingCurve(QEasingCurve::Linear);
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+    }
 }
 
 void HelpEnemy::animEnemy()

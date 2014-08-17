@@ -38,29 +38,33 @@ signals:
     void killEnemy(int amount);
     void gameOver();
 
-public slots:
-    void showEnemy(Enemy* enemy);
-    void insertNemy(Enemy* enemy);
-
 private slots:
     void shot(const QPoint& pos);
     void deleteShotItem(Shot* shotItem);
     void countDownEnemy(Common::MoveSprite moveSprite);
     void randomShotEnemy();
-    void helpEnemy(Enemy* enemy);
+    void randomHelpEnemy();
+    void insertHelpEnemy(QTimer* timer, QVector<QPair<Enemy*, Enemy*>>& randNewEnemy);
 
 private:
     QPoint                      m_posBoundingSprite;
     QSize                       m_sizeBoundingSprite;
     Player                      *m_player           = nullptr;
     QGraphicsItemGroup          *m_group            = new QGraphicsItemGroup(this);
-    QTimer                      *m_randomShotEnemy  = new QTimer(this);
-    QTimer                      *m_helpEnemy        = new QTimer(this);
+    QTimer                      *m_randShotEnemy    = new QTimer(this);
+    QTimer                      *m_randHelpEnemy    = new QTimer(this);
     QVector<QVector<Enemy*>>    m_enemy_;
     QVector<Shot*>              m_shot_;
+    QVector<QPixmap>            m_pixEnemy;
     QPoint                      m_posStartEnemy;
-    int m_row = 4;
+    QVector<std::function<void(Enemy*, QPoint, bool)>> m_animationHelp_;
+    int m_row           = 4;
+    int m_countYDown    = 0;
     int m_speedEnemy;
+
+
+
+        QTimer                      *m_helpEnemy        = new QTimer(this);
 
     Enemy* m_enemy = nullptr;
 

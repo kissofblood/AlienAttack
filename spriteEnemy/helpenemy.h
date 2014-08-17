@@ -1,6 +1,7 @@
 #ifndef HELPENEMY_H
 #define HELPENEMY_H
 
+#include "enemy.h"
 #include <QGraphicsItem>
 #include <QVector>
 #include <QPropertyAnimation>
@@ -9,21 +10,14 @@
 
 #include <QtWidgets>
 
-#include "enemy.h"
-
 class HelpEnemy : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
-    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
     HelpEnemy(QGraphicsItem* parent = nullptr);
     ~HelpEnemy() = default;
 
-    void animationHelp_1(Enemy* enemy, const QPointF& pos);
-
-signals:
-    void showNewEnemy(Enemy* enemy);
-    void insertNewEnemy(Enemy* enemy);
+    void animationHelp_1(Enemy* enemy, const QPoint& pos, bool deleteAnim);
 
 private slots:
     void animEnemy();
