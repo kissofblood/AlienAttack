@@ -4,7 +4,6 @@
 #include "shot.h"
 #include "enemy.h"
 #include "abstractsprite.h"
-#include "player.h"
 #include "helpenemy.h"
 #include <QGraphicsItemGroup>
 #include <QGraphicsItem>
@@ -14,6 +13,7 @@
 #include <functional>
 #include <QTimer>
 #include <QSize>
+#include <QPointer>
 
 #include <QtWidgets>
 
@@ -21,7 +21,7 @@ class EnemyGroup : public AbstractSprite
 {
     Q_OBJECT
 public:
-    EnemyGroup(const QPoint& pos, int rightScene, Player* player, QGraphicsItem* parent = nullptr);
+    EnemyGroup(const QPoint& pos, int rightScene, QGraphicsItem* parent = nullptr);
     ~EnemyGroup() = default;
 
     QRectF boundingRect() const override;
@@ -44,28 +44,24 @@ private slots:
     void countDownEnemy(Common::MoveSprite moveSprite);
     void randomShotEnemy();
     void randomHelpEnemy();
-    void insertHelpEnemy(QTimer* timer);
+    void insertHelpEnemy();
 
 private:
-    QPoint                      m_posBoundingSprite;
-    QSize                       m_sizeBoundingSprite;
-    Player                      *m_player           = nullptr;
-    QGraphicsItemGroup          *m_group            = new QGraphicsItemGroup(this);
-    QTimer                      *m_randShotEnemy    = new QTimer(this);
-    QTimer                      *m_randHelpEnemy    = new QTimer(this);
-    QVector<QVector<Enemy*>>    m_enemy_;
-    QVector<Shot*>              m_shot_;
-    QVector<QPixmap>            m_pixEnemy;
-    QPoint                      m_posStartEnemy;
-    QVector<QPair<Enemy*, Enemy*>>               m_randNewEnemy_;
+    QPoint                   m_posBoundingSprite;
+    QSize                    m_sizeBoundingSprite;
+    QGraphicsItemGroup       *m_group            = new QGraphicsItemGroup(this);
+    QTimer                   *m_randShotEnemy    = new QTimer(this);
+    QTimer                   *m_randHelpEnemy    = new QTimer(this);
+    QTimer                   *m_insertHelpEnemy  = new QTimer(this);
+    QVector<QVector<Enemy*>> m_enemy_;
+    QVector<Shot*>           m_shot_;
+    QVector<QPixmap>         m_pixEnemy;
+    QPoint                   m_posStartEnemy;
     QVector<std::function<void(Enemy*, QPoint)>> m_animationHelp_;
+    QVector<QPair<Enemy*, QPointer<Enemy>>> m_randNewEnemy_;
     int m_row           = 4;
-    int m_countYDown    = 0;
     int m_speedEnemy;
 
-
-
-        QTimer                      *m_helpEnemy        = new QTimer(this);
 
     Enemy* m_enemy = nullptr;
 

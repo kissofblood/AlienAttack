@@ -5,6 +5,7 @@
 #include "common.h"
 #include <QGraphicsItem>
 #include <QRectF>
+#include <QRect>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
@@ -14,8 +15,6 @@
 #include <QTimerEvent>
 #include <QtMultimedia/QSound>
 #include <QPainterPath>
-
-#include <QtWidgets>
 
 class Shot : public AbstractSprite
 {

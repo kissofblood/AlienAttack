@@ -27,7 +27,7 @@ public:
     Enemy(const QPoint& pos, const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
     Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
     ~Enemy() = default;
-    Enemy& operator =(const Enemy& enemy);
+    Enemy& operator +=(Enemy* enemy);
 
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
@@ -35,7 +35,7 @@ public:
     void stopGame() override;
     QPainterPath shape() const override;
     void attack();
-    void setPosYSpite(qreal y);
+    void downSprite();
     QPoint posSpiteTopLeft() const;
     QPoint posSpriteTopRight() const;
     QPoint scenePosSprite() const;
@@ -56,7 +56,7 @@ private:
     QVector<QPixmap>    m_pixSprite_;
     QRect               m_rectSprite;
     QTimer              *m_animSprite       = new QTimer(this);
-    Common::MoveSprite  m_moveSprite        = Common::MoveSprite::TurnLeft;
+    Common::MoveSprite  m_moveSprite        = Common::MoveSprite::TurnRight;
     int                 m_frameIndex        = 0;
     int                 m_timerId           = -1;
     bool                m_flagForwardOrBack = true;

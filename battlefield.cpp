@@ -20,7 +20,7 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     m_itemTxtTimer->setFont(QFont("Times", 25, QFont::Normal));
     m_itemTxtTimer->setDefaultTextColor(QColor(Qt::white));
 
-    m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right(), m_player);
+    m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right());
 
     m_helpEnemy->setPos(100, 300);
     m_enemyGroup->setAnimation(m_helpEnemy);

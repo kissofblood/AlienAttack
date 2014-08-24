@@ -25,19 +25,19 @@ Enemy::Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVecto
     this->connect(m_animSprite, &QTimer::timeout, this, &Enemy::animSprite);
 }
 
-Enemy& Enemy::operator =(const Enemy& enemy)
+Enemy& Enemy::operator +=(Enemy* enemy)
 {
-    if(&enemy == this)
+    if(enemy == this)
         return *this;
     this->prepareGeometryChange();
-    m_posBoundingSprite  = enemy.m_posBoundingSprite;
-    m_moveSprite         = enemy.m_moveSprite;
-    m_widthBounding      = enemy.m_widthBounding;
-    m_yFire              = enemy.m_yFire;
+    m_posBoundingSprite  = enemy->m_posBoundingSprite;
+    m_moveSprite         = enemy->m_moveSprite;
+    m_widthBounding      = enemy->m_widthBounding;
+    m_yFire              = enemy->m_yFire;
     m_animSpriteUpdate   = false;
     m_stopScenePosSprite = true;
-    m_rectSprite.moveLeft(enemy.m_rectSprite.right() + 5);
-    setSpeed(enemy.m_speedSprite);
+    m_rectSprite.moveLeft(enemy->m_rectSprite.right() + 5);
+    setSpeed(enemy->m_speedSprite);
     return *this;
 }
 
@@ -86,10 +86,12 @@ void Enemy::attack()
     emit fire(QPoint(m_rectSprite.left() + m_rectSprite.width() / 2 - 3, m_yFire));
 }
 
-void Enemy::setPosYSpite(qreal y)
+void Enemy::downSprite()
 {
-    this->setY(y - 20);
-    m_yFire += this->pos().y() - m_yFire;
+    this->prepareGeometryChange();
+    m_posBoundingSprite.ry() += 20;
+    m_rectSprite.moveTop(m_posBoundingSprite.y());
+    m_yFire += m_posBoundingSprite.y() - m_yFire;
     m_yFire += m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
 }
 
