@@ -9,7 +9,7 @@ Enemy::Enemy(const QPoint& pos, const QVector<QPixmap>& pix, QGraphicsItem* pare
     m_yFire = m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
     m_animSpriteUpdate = true;
 
-    m_animSprite->start(70);
+    m_animSprite->start(Common::speedAnimEnemy);
     this->connect(m_animSprite, &QTimer::timeout, this, &Enemy::animSprite);
 }
 
@@ -21,7 +21,7 @@ Enemy::Enemy(const QPoint& pos, const QPair<int, int>& lefrAndRigh, const QVecto
     m_widthBounding = lefrAndRigh.second - 5 - lefrAndRigh.first;
     m_yFire = m_rectSprite.top() + m_pixSprite_[m_frameIndex].height() - 15;
 
-    m_animSprite->start(70);
+    m_animSprite->start(Common::speedAnimEnemy);
     this->connect(m_animSprite, &QTimer::timeout, this, &Enemy::animSprite);
 }
 
@@ -48,7 +48,6 @@ QRectF Enemy::boundingRect() const
 
 void Enemy::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    painter->drawRect(boundingRect());
     painter->drawPixmap(m_rectSprite, m_pixSprite_[m_frameIndex]);
 }
 

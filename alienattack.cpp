@@ -19,7 +19,7 @@ AlienAttack::AlienAttack(QWidget* parent) : QGraphicsView(parent)
 void AlienAttack::setSceneBattlefield()
 {
     m_battlefield = new Battlefield(QRectF(0, 0, Common::sizeScene.width(), Common::sizeScene.height()), this);
-    //m_battlefield->setSpeedShotEnemy(3000);
+    m_battlefield->setSpeedShotEnemy(3000);
     m_battlefield->setSpeedEnemy(25);
     m_battlefield->activateTime();
     m_level->initialData(3000, 25);

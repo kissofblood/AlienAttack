@@ -3,7 +3,6 @@
 
 #include "player.h"
 #include "spriteEnemy/enemygroup.h"
-#include "spriteEnemy/helpenemy.h"
 #include "shot.h"
 #include "common.h"
 #include <QObject>
@@ -24,6 +23,8 @@
 #include <QPropertyAnimation>
 #include <QString>
 #include <QTimer>
+#include <QtMultimedia/QMediaPlayer>
+#include <QtMultimedia/QMediaContent>
 
 #include <QtWidgets>
 
@@ -62,7 +63,7 @@ private:
     QGraphicsTextItem   *m_itemTxtTimer  = nullptr;
     QStateMachine       *m_stateMachine  = new QStateMachine(this);
     QTimer              *m_timer         = new QTimer(this);
-    HelpEnemy           *m_helpEnemy     = new HelpEnemy;
+    QMediaPlayer        *m_mediaPlayer   = new QMediaPlayer(this);
     QVector<Shot*>      m_shot_;
 };
 

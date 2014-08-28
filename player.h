@@ -9,16 +9,15 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
-#include <QPointF>
+#include <QPoint>
 #include <QKeyEvent>
 #include <QTimer>
 #include <QRect>
 #include <QPainterPath>
 #include <QVector>
-#include <QTimer>
+#include <QTimerEvent>
+#include <QString>
 #include <QtMultimedia/QSound>
-
-#include <QtWidgets>
 
 class Player : public AbstractSprite
 {

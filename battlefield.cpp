@@ -3,7 +3,7 @@
 Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(rect, parent)
     , m_player(new Player(QPoint(300, 550), rect.right(), QPixmap(":player/resource/player.png")))
 {
-    //this->addPixmap(QPixmap(":/titlescreen/resource/bgScreen.png"));
+    this->addPixmap(QPixmap(":/titlescreen/resource/bgScreen.png"));
     m_itemPixLive = this->addPixmap(QPixmap(":player/resource/player.png"));
     m_itemPixLive->setPos(20, 550);
     m_itemTxtLive = this->addText("x3");
@@ -22,10 +22,6 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
 
     m_enemyGroup = new EnemyGroup(QPoint(300, 20), rect.right());
 
-    m_helpEnemy->setPos(100, 300);
-    m_enemyGroup->setAnimation(m_helpEnemy);
-    this->addItem(m_helpEnemy);
-
     this->addItem(m_enemyGroup);
     this->addItem(m_player);
     this->connect(m_player,     &Player::fire,           this, &Battlefield::shot);
@@ -33,6 +29,9 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     this->connect(m_enemyGroup, &EnemyGroup::killEnemy,  this, &Battlefield::killEnemy);
     this->connect(m_enemyGroup, &EnemyGroup::gameOver,   this, &Battlefield::stopGame);
     this->connect(m_timer,      &QTimer::timeout,        this, &Battlefield::countdown);
+
+    m_mediaPlayer->setMedia(QMediaContent(QUrl("qrc:/sound/resource/sound/MOLECUL - Miles.mp3")));
+    m_mediaPlayer->play();
 }
 
 void Battlefield::setSpeedShotEnemy(int msec)

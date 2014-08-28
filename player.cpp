@@ -6,10 +6,11 @@ Player::Player(const QPoint& pos, int rightScene, const QPixmap& pix, QGraphicsI
     , m_rectSprite(pos.x(), pos.y(), pix.width(), pix.height())
 {
     this->setFlag(QGraphicsItem::ItemIsFocusable);
+    this->setFocus();
     QTimer* timer = new QTimer(this);
     this->connect(timer, &QTimer::timeout, this, [this]()
     { this->setFocus(); });
-    timer->start(1000);
+    timer->start(800);
 
     m_widthBounding = rightScene - 5 - pos.x();
     m_moveSprite = Common::MoveSprite::Stop;
@@ -33,11 +34,9 @@ QRectF Player::boundingRect() const
 
 void Player::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-   //painter->drawRect(boundingRect());
     painter->drawPixmap(m_rectSprite, m_pixSprite);
     if(m_animExplosion->isActive())
-        painter->drawPixmap(m_rectSprite.x(), m_posBoundingSprite.y() - 30
-                        , m_pixExplosion_[m_frameIndex]);
+        painter->drawPixmap(m_rectSprite.x(), m_posBoundingSprite.y() - 30, m_pixExplosion_[m_frameIndex]);
 }
 
 void Player::setSpeed(int msec)

@@ -4,7 +4,6 @@
 #include "shot.h"
 #include "enemy.h"
 #include "abstractsprite.h"
-#include "helpenemy.h"
 #include <QGraphicsItemGroup>
 #include <QGraphicsItem>
 #include <QVector>
@@ -25,13 +24,12 @@ public:
     ~EnemyGroup() = default;
 
     QRectF boundingRect() const override;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
+    void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override { }
     void setSpeed(int msec) override;
     void setSpeedEnemy(int msec);
     void stopGame() override;
     void removeShotItem(Shot* shotItem);
     bool collidingEnemy(Shot* shot);
-    void setAnimation(HelpEnemy* helpEnemy);
 
 signals:
     void pathShot(Shot* shot);
@@ -47,25 +45,34 @@ private slots:
     void insertHelpEnemy();
 
 private:
+    class HelpEnemy : public QGraphicsPixmapItem
+    {
+    public:
+        HelpEnemy(int speed, const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
+        ~HelpEnemy() override;
+
+        void animationHelp(Enemy* enemy, const QPoint& posEnd);
+
+    private:
+        QVector<QPixmap>    m_pixEnemy_;
+        QTimer              *m_animHelp = new QTimer;
+        int                 m_speedPosEnd;
+    };
+
     QPoint                   m_posBoundingSprite;
     QSize                    m_sizeBoundingSprite;
     QGraphicsItemGroup       *m_group            = new QGraphicsItemGroup(this);
     QTimer                   *m_randShotEnemy    = new QTimer(this);
     QTimer                   *m_randHelpEnemy    = new QTimer(this);
     QTimer                   *m_insertHelpEnemy  = new QTimer(this);
+    HelpEnemy                *m_helpEnemy        = nullptr;
     QVector<QVector<Enemy*>> m_enemy_;
     QVector<Shot*>           m_shot_;
     QVector<QPixmap>         m_pixEnemy;
-    QPoint                   m_posStartEnemy;
-    QVector<std::function<void(Enemy*, QPoint)>> m_animationHelp_;
+    QPoint                   m_posStartEnemy = { 20, 200 };
     QVector<QPair<Enemy*, QPointer<Enemy>>> m_randNewEnemy_;
     int m_row           = 4;
     int m_speedEnemy;
-
-
-    Enemy* m_enemy = nullptr;
-
-    HelpEnemy* m_help = nullptr;
 
     bool outputAbroad() override;
 };

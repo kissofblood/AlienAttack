@@ -21,8 +21,7 @@ SOURCES += main.cpp\
     shot.cpp \
     spriteEnemy/enemy.cpp \
     spriteEnemy/enemygroup.cpp \
-    level.cpp \
-    spriteEnemy/helpenemy.cpp
+    level.cpp
 
 HEADERS  += alienattack.h \
     titlescreen.h \
@@ -33,8 +32,7 @@ HEADERS  += alienattack.h \
     spriteEnemy/enemy.h \
     common.h \
     spriteEnemy/enemygroup.h \
-    level.h \
-    spriteEnemy/helpenemy.h
+    level.h
 
 RESOURCES += \
     resource.qrc

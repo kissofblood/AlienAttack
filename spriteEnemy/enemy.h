@@ -8,16 +8,14 @@
 #include <QVector>
 #include <QGraphicsItem>
 #include <QRectF>
+#include <QRect>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 #include <QTimer>
 #include <QPair>
 #include <QPainterPath>
-#include <QTimer>
-
-
-#include <QtWidgets>
+#include <QTimerEvent>
 
 class Enemy : public AbstractSprite
 {

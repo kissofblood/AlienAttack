@@ -7,12 +7,12 @@ Shot::Shot(Common::Person person, const QPoint& pos, int height, const QVector<Q
     if(person == Common::Person::Player)
     {
         m_posBoundingSprite = QPoint(pos.x(), pos.y() - vecPix.front().height() + 4);
-        //QSound::play(":sound/resource/sound/playerShot.wav");
+        QSound::play(":sound/resource/sound/playerShot.wav");
     }
     else if(person == Common::Person::Enemy)
     {
         m_posBoundingSprite = pos;
-        //QSound::play(":sound/resource/sound/enemyShot.wav");
+        QSound::play(":sound/resource/sound/enemyShot.wav");
     }
     m_pixSprite_ = vecPix;
     m_heightBounding = height;
