@@ -7,8 +7,8 @@ namespace Common {
 
 enum class Person { Player, Enemy };
 enum class MoveSprite { TurnLeft, TurnRight, Stop };
-static QSize sizeScene(995, 615);
-static int speedAnimEnemy = 70;
+static const QSize sizeScene(995, 615);
+static const int speedAnimEnemy = 70;
 
 }
 

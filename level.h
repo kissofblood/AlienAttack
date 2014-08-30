@@ -9,8 +9,9 @@
 #include <tuple>
 #include <QPair>
 #include <QTimer>
-
-#include <QtWidgets>
+#include <QString>
+#include <QFont>
+#include <QColor>
 
 class Level : public QGraphicsScene
 {
@@ -47,9 +48,6 @@ private:
     FunSpeed                    m_speedShotEnemy    = nullptr;
     FunSpeed                    m_speedEnemy        = nullptr;
     FunTimer                    m_activateTimer     = nullptr;
-
-
-    //QGraphicsPixmapItem* m_item = nullptr;
 };
 
 #endif // LEVEL_H

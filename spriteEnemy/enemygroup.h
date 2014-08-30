@@ -4,6 +4,7 @@
 #include "shot.h"
 #include "enemy.h"
 #include "abstractsprite.h"
+#include "common.h"
 #include <QGraphicsItemGroup>
 #include <QGraphicsItem>
 #include <QVector>
@@ -13,8 +14,18 @@
 #include <QTimer>
 #include <QSize>
 #include <QPointer>
-
-#include <QtWidgets>
+#include <QRectF>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <QWidget>
+#include <QObject>
+#include <QPixmap>
+#include <QPair>
+#include <QTime>
+#include <QString>
+#include <QPropertyAnimation>
+#include <QAbstractAnimation>
+#include <QEasingCurve>
 
 class EnemyGroup : public AbstractSprite
 {
@@ -48,7 +59,7 @@ private:
     class HelpEnemy : public QGraphicsPixmapItem
     {
     public:
-        HelpEnemy(int speed, const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
+        HelpEnemy(const QVector<QPixmap>& pix, QGraphicsItem* parent = nullptr);
         ~HelpEnemy() override;
 
         void animationHelp(Enemy* enemy, const QPoint& posEnd);
@@ -56,7 +67,6 @@ private:
     private:
         QVector<QPixmap>    m_pixEnemy_;
         QTimer              *m_animHelp = new QTimer;
-        int                 m_speedPosEnd;
     };
 
     QPoint                   m_posBoundingSprite;
@@ -76,6 +86,5 @@ private:
 
     bool outputAbroad() override;
 };
-
 
 #endif // ENEMYGROUP_H

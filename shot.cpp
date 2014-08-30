@@ -31,7 +31,7 @@ QRectF Shot::boundingRect() const
 void Shot::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
     painter->drawPixmap(m_rectSprite, m_pixSprite_[m_indexAnimPix == m_pixSprite_.size()
-                                                    ? m_indexAnimPix - 1 : m_indexAnimPix]);
+                                              ? m_indexAnimPix - 1 : m_indexAnimPix]);
 }
 
 void Shot::setSpeed(int msec)

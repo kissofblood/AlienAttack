@@ -48,7 +48,7 @@ void AlienAttack::restartSceneBattlefield()
 void AlienAttack::showText()
 {
     QGraphicsTextItem* txtGameOver = m_battlefield->addText("Game Over");
-    txtGameOver->setPos(this->width() / 2 - 100, 20);
+    txtGameOver->setPos(this->width() / 2 - 100, 200);
     txtGameOver->setFont(QFont("Times", 60, QFont::Bold));
     txtGameOver->setDefaultTextColor(QColor(Qt::red));
 

@@ -8,8 +8,8 @@
         <file>resource/sound/playerShot.wav</file>
         <file>resource/sound/enemyShot.wav</file>
         <file>resource/sound/explosion.wav</file>
-        <file>resource/sound/MOLECUL - Miles.mp3</file>
-        <file>resource/sound/MOLECUL - 07.Шифр Параллели.mp3</file>
+        <file>resource/sound/CipherParallels.mp3</file>
+        <file>resource/sound/Miles.mp3</file>
     </qresource>
     <qresource prefix="/player">
         <file>resource/player.png</file>

@@ -12,6 +12,8 @@
 #include <functional>
 #include <QGraphicsTextItem>
 #include <QTimer>
+#include <QFont>
+#include <QColor>
 
 class AlienAttack : public QGraphicsView
 {

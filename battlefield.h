@@ -25,8 +25,8 @@
 #include <QTimer>
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QMediaContent>
-
-#include <QtWidgets>
+#include <QTime>
+#include <QUrl>
 
 class Battlefield : public QGraphicsScene
 {

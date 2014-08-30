@@ -33,12 +33,12 @@ EnemyGroup::EnemyGroup(const QPoint& pos, int rightScene, QGraphicsItem* parent)
         }
     });
 
-    m_helpEnemy = new HelpEnemy(100, m_pixEnemy, this);
+    m_helpEnemy = new HelpEnemy(m_pixEnemy, this);
     m_helpEnemy->setPos(m_posStartEnemy);
 
     this->connect(m_randHelpEnemy, &QTimer::timeout, this, &EnemyGroup::randomHelpEnemy);
     this->connect(m_randShotEnemy, &QTimer::timeout, this, &EnemyGroup::randomShotEnemy);
-    m_randHelpEnemy->start(500);
+    m_randHelpEnemy->start(1000);
 }
 
 QRectF EnemyGroup::boundingRect() const
@@ -113,7 +113,7 @@ void EnemyGroup::shot(const QPoint& pos)
 
     m_shot_.push_back(new Shot(Common::Person::Enemy, pos, Common::sizeScene.height() - pos.y(), vecPix));
     m_group->addToGroup(m_shot_.back());
-    this->connect(m_shot_.back(), &Shot::deleteShot, this, &EnemyGroup::deleteShotItem);
+    this->connect(m_shot_.back(), &Shot::deleteShot, this, &EnemyGroup::deleteShotItem, Qt::QueuedConnection);
     this->connect(m_shot_.back(), &Shot::pathShot,   this, &EnemyGroup::pathShot);
 }
 
@@ -175,23 +175,19 @@ void EnemyGroup::randomHelpEnemy()
         for(int i = 1; i < vecEnemy.size(); i++)
         {
             int distance = vecEnemy[i]->posSpiteTopLeft().x() - vecEnemy[i - 1]->posSpriteTopRight().x();
-            if(distance > 13)
+            if(distance > 15)
                 leftEnemy.push_back(vecEnemy[i - 1]);
         }
 
     if(leftEnemy.empty())
-    {
-        qDebug()<<"RETURN";
-        m_randHelpEnemy->start(500);
         return;
-    }
 
     m_randHelpEnemy->stop();
     int amountHelpEnemy = qrand() % leftEnemy.size();
     forever
     {
         QPointer<Enemy> currentEnemy = leftEnemy[qrand() % leftEnemy.size()];
-        if(std::find_if(m_randNewEnemy_.begin(), m_randNewEnemy_.end(), [currentEnemy](const QPair<Enemy*, Enemy*>& pair)->bool
+        if(std::find_if(m_randNewEnemy_.begin(), m_randNewEnemy_.end(), [currentEnemy](const QPair<Enemy*, QPointer<Enemy>>& pair)->bool
         { return pair.second == currentEnemy; }) == m_randNewEnemy_.end())
         {
             Enemy* newEnemy = new Enemy(m_posStartEnemy, m_pixEnemy, this);
@@ -208,14 +204,12 @@ void EnemyGroup::randomHelpEnemy()
 
 void EnemyGroup::insertHelpEnemy()
 {
-    static int count = 0;
-    qDebug()<<"START"<<count++;
     for(int i = 0; i < m_randNewEnemy_.size(); i++)
     {
         if(m_randNewEnemy_[i].second != nullptr)
         {
             if(m_randNewEnemy_[i].first->posSpiteTopLeft().y() == m_randNewEnemy_[i].second->posSpriteTopRight().y() + 1
-                    ||m_randNewEnemy_[i].first->posSpiteTopLeft().y() == m_randNewEnemy_[i].second->posSpriteTopRight().y() - 1
+               || m_randNewEnemy_[i].first->posSpiteTopLeft().y() == m_randNewEnemy_[i].second->posSpriteTopRight().y() - 1
                || m_randNewEnemy_[i].first->posSpiteTopLeft().y() == m_randNewEnemy_[i].second->posSpriteTopRight().y())
             {
                 (*m_randNewEnemy_[i].first) += m_randNewEnemy_[i].second;
@@ -256,6 +250,12 @@ void EnemyGroup::insertHelpEnemy()
         else
         {
             int index = m_randNewEnemy_[i].first->objectName().toInt();
+            if(index >= m_enemy_.size())
+            {
+                delete m_randNewEnemy_[i].first;
+                m_randNewEnemy_.remove(i);
+                break;
+            }
             if(m_enemy_[index].isEmpty())
             {
                 delete m_randNewEnemy_[i].first;
@@ -293,8 +293,7 @@ void EnemyGroup::insertHelpEnemy()
     if(m_randNewEnemy_.empty())
     {
         m_insertHelpEnemy->stop();
-        qDebug()<<"STOP";
-        m_randHelpEnemy->start(500);
+        m_randHelpEnemy->start(1000);
     }
 }
 
@@ -306,10 +305,9 @@ bool EnemyGroup::outputAbroad()
     return false;
 }
 
-EnemyGroup::HelpEnemy::HelpEnemy(int speed, const QVector<QPixmap>& pix, QGraphicsItem* parent) : QGraphicsPixmapItem(parent)
+EnemyGroup::HelpEnemy::HelpEnemy(const QVector<QPixmap>& pix, QGraphicsItem* parent) : QGraphicsPixmapItem(parent)
     , m_pixEnemy_(pix)
 {
-    m_speedPosEnd = speed;
     QObject::connect(m_animHelp, &QTimer::timeout, [this]()
     {
         static int  frameIndex = 0;
@@ -337,7 +335,7 @@ EnemyGroup::HelpEnemy::~HelpEnemy()
 void EnemyGroup::HelpEnemy::animationHelp(Enemy* enemy, const QPoint& posEnd)
 {
     QPropertyAnimation* anim = new QPropertyAnimation(enemy, "scenePosSprite");
-    anim->setDuration(m_speedPosEnd);
+    anim->setDuration(100);
     anim->setEndValue(posEnd);
     anim->setEasingCurve(QEasingCurve::Linear);
     anim->start(QAbstractAnimation::DeleteWhenStopped);

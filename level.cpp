@@ -2,14 +2,13 @@
 
 Level::Level(const QRectF& rect, QObject* parent) : QGraphicsScene(rect, parent)
 {
-    //m_item = this->addPixmap(QPixmap(":/titlescreen/resource/bgScreen.png"));
     m_txtItemAmount = this->addText(m_txtAmount);
     m_txtItemAmount->setPos(rect.width() / 2 - 150, rect.height() / 2 - 100);
     m_txtItemAmount->setFont(QFont("Times", 20, QFont::Normal));
     m_txtItemAmount->setDefaultTextColor(QColor(Qt::black));
 }
 
-void Level::setFun(const std::tuple<Level::FunSpeed, Level::FunSpeed, Level::FunTimer>& fun)
+void Level::setFun(const std::tuple<FunSpeed, FunSpeed, FunTimer>& fun)
 { std::tie(m_speedShotEnemy, m_speedEnemy, m_activateTimer) = fun; }
 
 void Level::initialData(int speedShotEnemy, int speedEnemy)
@@ -43,7 +42,7 @@ void Level::finishLevel()
                                 + m_txtAmount.arg(QString::number(m_amount)));
     emit victory();
 
-    QTimer::singleShot(1000, this, SLOT(activateLevel()));
+    QTimer::singleShot(2000, this, SLOT(activateLevel()));
     m_amount = 0;
 }
 

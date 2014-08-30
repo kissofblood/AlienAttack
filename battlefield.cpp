@@ -3,6 +3,7 @@
 Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(rect, parent)
     , m_player(new Player(QPoint(300, 550), rect.right(), QPixmap(":player/resource/player.png")))
 {
+    qsrand(QTime::currentTime().msec());
     this->addPixmap(QPixmap(":/titlescreen/resource/bgScreen.png"));
     m_itemPixLive = this->addPixmap(QPixmap(":player/resource/player.png"));
     m_itemPixLive->setPos(20, 550);
@@ -30,7 +31,10 @@ Battlefield::Battlefield(const QRectF& rect, QObject* parent) : QGraphicsScene(r
     this->connect(m_enemyGroup, &EnemyGroup::gameOver,   this, &Battlefield::stopGame);
     this->connect(m_timer,      &QTimer::timeout,        this, &Battlefield::countdown);
 
-    m_mediaPlayer->setMedia(QMediaContent(QUrl("qrc:/sound/resource/sound/MOLECUL - Miles.mp3")));
+    if(qrand() % 2 == 0)
+        m_mediaPlayer->setMedia(QMediaContent(QUrl("qrc:/sound/resource/sound/Miles.mp3")));
+    else
+        m_mediaPlayer->setMedia(QMediaContent(QUrl("qrc:/sound/resource/sound/CipherParallels.mp3")));
     m_mediaPlayer->play();
 }
 
@@ -55,7 +59,7 @@ void Battlefield::shot(const QPoint& pos)
 
     m_shot_.push_back(new Shot(Common::Person::Player, pos, 550, vecPix));
     this->addItem(m_shot_.back());
-    this->connect(m_shot_.back(), &Shot::deleteShot, this, &Battlefield::deleteShotItem);
+    this->connect(m_shot_.back(), &Shot::deleteShot, this, &Battlefield::deleteShotItem, Qt::QueuedConnection);
     this->connect(m_shot_.back(), &Shot::pathShot,   this, &Battlefield::collidingEnemy);
 }
 
